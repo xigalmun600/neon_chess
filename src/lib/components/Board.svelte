@@ -1,44 +1,79 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { Chess, SQUARES } from "chess.js";
+  import { Chess } from "chess.js";
   import { Chessground } from "chessground";
+  import type { Api } from "chessground/api";
   import "chessground/assets/chessground.base.css";
   import "chessground/assets/chessground.brown.css";
   import "chessground/assets/chessground.cburnett.css";
-  import type { Key, Dests } from "chessground/types";
-  
+  import type { Key } from "chessground/types";
+  import { color, send, lastMove } from "$lib/stores/socket";
+
   let el: HTMLDivElement;
+  let cg: Api;
+
+  const chess = new Chess();
+
+  const getLegalMoves = () => {
+    const legalMoves = new Map<Key, Key[]>();
+    for (const { from, to } of chess.moves({ verbose: true })) {
+      const existing = legalMoves.get(from as Key) ?? [];
+      legalMoves.set(from as Key, [...existing, to as Key]);
+    }
+    return legalMoves;
+  };
+
+  const updateBoard = () => {
+    const myTurn =
+      ($color === "white" && chess.turn() === "w") ||
+      ($color === "black" && chess.turn() === "b");
+    const turnColor = chess.turn() === "w" ? "white" : "black";
+
+    cg.set({
+      turnColor,
+      movable: {
+        color: myTurn ? $color! : undefined,
+        dests: myTurn ? getLegalMoves() : new Map(),
+      },
+    });
+  };
 
   onMount(() => {
-    const chess = new Chess();
-
-    const getLegalMoves = () => {
-      const legalMoves = new Map<Key, Key[]>();
-      console.log(chess.moves({ verbose: true }));
-
-      for (const { from, to } of chess.moves({ verbose: true })) {
-        const existing = legalMoves.get(from) ?? [];
-        legalMoves.set(from, [...existing, to]);
-      }
-
-      return legalMoves;
-    };
-
-    const cg = Chessground(el, {
+    cg = Chessground(el, {
+      orientation: $color ?? "white",
       movable: {
         free: false,
-        dests: getLegalMoves(),
+        color: undefined,
+        dests: new Map(),
         events: {
-          after: (ori, dest) => {
-            console.log(ori, dest);
-            chess.move({ from: ori, to: dest });
-            cg.set({ movable: { dests: getLegalMoves() } });
+          after: (from, to) => {
+            if (applyingOpponentMove) return;
+            chess.move({ from, to });
+            send({ type: "move", from, to });
+            updateBoard();
           },
         },
       },
     });
+  });
 
-    return cg;
+  $effect(() => {
+    if (cg && $color) {
+      cg.set({ orientation: $color });
+      updateBoard();
+    }
+  });
+
+  let applyingOpponentMove = false;
+
+  $effect(() => {
+    if (cg && $lastMove) {
+      applyingOpponentMove = true;
+      chess.move({ from: $lastMove.from, to: $lastMove.to });
+      cg.move($lastMove.from as Key, $lastMove.to as Key);
+      applyingOpponentMove = false;
+      updateBoard();
+    }
   });
 </script>
 
