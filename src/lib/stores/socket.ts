@@ -2,7 +2,6 @@ import { writable } from "svelte/store";
 
 export type Chat = string[];
 export const connected = writable(false);
-export const chatlog = writable<Chat>([]);
 
 let ws: WebSocket;
 
@@ -14,10 +13,14 @@ export function connect() {
 
   ws.onmessage = (event) => {
     const msg = event.data;
-    chatlog.update(current => [...current, msg]);
+    console.log(msg);
   };
 }
 
-export function send(msg: string) {
-  ws.send(msg);
+export function send(msg: object) {
+  if(!ws) {
+    console.warn("not connected");
+    return;
+  }
+  ws.send(JSON.stringify(msg));
 }
