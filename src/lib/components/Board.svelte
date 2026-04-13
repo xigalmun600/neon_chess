@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { color, send, lastMove } from "$lib/stores/socket";
+  import { game, send } from "$lib/state/socket.svelte";
   import { Chess } from "chess.js";
   import type { Api } from "chessground/api";
   import type { Key } from "chessground/types";
@@ -25,14 +25,14 @@
 
   const updateBoard = () => {
     const myTurn =
-      ($color === "white" && chess.turn() === "w") ||
-      ($color === "black" && chess.turn() === "b");
+      (game.color === "white" && chess.turn() === "w") ||
+      (game.color === "black" && chess.turn() === "b");
     const turnColor = chess.turn() === "w" ? "white" : "black";
 
     cg.set({
       turnColor,
       movable: {
-        color: myTurn ? $color! : undefined,
+        color: myTurn ? game.color! : undefined,
         dests: myTurn ? getLegalMoves() : new Map(),
       },
     });
@@ -40,7 +40,7 @@
 
   onMount(() => {
     cg = Chessground(el, {
-      orientation: $color ?? "white",
+      orientation: game.color ?? "white",
       movable: {
         free: false,
         color: undefined,
@@ -57,16 +57,16 @@
   });
 
   $effect(() => {
-    if (cg && $color) {
-      cg.set({ orientation: $color });
+    if (cg && game.color) {
+      cg.set({ orientation: game.color });
       updateBoard();
     }
   });
 
   $effect(() => {
-    if (cg && $lastMove) {
-      chess.move({ from: $lastMove.from, to: $lastMove.to });
-      cg.move($lastMove.from as Key, $lastMove.to as Key);
+    if (cg && game.lastMove) {
+      chess.move({ from: game.lastMove.from, to: game.lastMove.to });
+      cg.move(game.lastMove.from as Key, game.lastMove.to as Key);
       updateBoard();
     }
   });

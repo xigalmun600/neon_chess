@@ -1,15 +1,15 @@
 <script lang="ts">
   import Board from "$lib/components/Board.svelte";
-  import { status, send } from "$lib/stores/socket";
+  import { game, send } from "$lib/state/socket.svelte";
 </script>
 
 <main class="flex flex-col items-center justify-center min-h-screen">
   <p>
-    {#if $status == "off"}
+    {#if game.status == "off"}
       disconnected
-    {:else if $status == "on"}
+    {:else if game.status == "on"}
       connected
-    {:else if $status == "find"}
+    {:else if game.status == "find"}
       finding
     {:else}
       match

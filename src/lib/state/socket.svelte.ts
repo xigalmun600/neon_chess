@@ -1,10 +1,11 @@
-import { writable } from "svelte/store";
-
 type Status = "off" | "on" | "find" | "match";
-export const status = writable<Status>("off");
-export const color = writable<"white" | "black" | null>(null);
-export const turn = writable<boolean>(false);
-export const lastMove = writable<{ from: string, to: string } | null>(null);
+
+export const game = $state({
+  status: "off" as Status,
+  color: null as "white" | "black" | null,
+  turn: false,
+  lastMove: null as { from: string, to: string } | null,
+});
 
 let ws: WebSocket;
 
@@ -20,24 +21,24 @@ export function connect() {
   ws = new WebSocket("ws://localhost:8080");
 
   ws.onopen = () => {
-    status.set("on");
+    game.status = "on";
     send({ "type": "find_match" });
   }
-  ws.onclose = () => status.set("off");
+  ws.onclose = () => game.status = "off";
 
   ws.onmessage = (packet) => {
     const msg = JSON.parse(packet.data);
     console.log(msg);
     switch (msg.type) {
       case "finding":
-        status.set("find");
+        game.status = "find";
         break;
       case "match":
-        status.set("match");
-        color.set(msg.color);
+        game.status = "match";
+        game.color = msg.color;
         break;
       case "move":
-        lastMove.set({ from: msg.from, to: msg.to });
+        game.lastMove = { from: msg.from, to: msg.to };
         console.log(msg);
         break;
       default:
