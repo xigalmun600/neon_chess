@@ -1,13 +1,13 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { color, send, lastMove } from "$lib/stores/socket";
   import { Chess } from "chess.js";
-  import { Chessground } from "chessground";
   import type { Api } from "chessground/api";
+  import type { Key } from "chessground/types";
+  import { Chessground } from "chessground";
   import "chessground/assets/chessground.base.css";
   import "chessground/assets/chessground.brown.css";
   import "chessground/assets/chessground.cburnett.css";
-  import type { Key } from "chessground/types";
-  import { color, send, lastMove } from "$lib/stores/socket";
 
   let el: HTMLDivElement;
   let cg: Api;
@@ -47,7 +47,6 @@
         dests: new Map(),
         events: {
           after: (from, to) => {
-            if (applyingOpponentMove) return;
             chess.move({ from, to });
             send({ type: "move", from, to });
             updateBoard();
@@ -64,14 +63,10 @@
     }
   });
 
-  let applyingOpponentMove = false;
-
   $effect(() => {
     if (cg && $lastMove) {
-      applyingOpponentMove = true;
       chess.move({ from: $lastMove.from, to: $lastMove.to });
       cg.move($lastMove.from as Key, $lastMove.to as Key);
-      applyingOpponentMove = false;
       updateBoard();
     }
   });
