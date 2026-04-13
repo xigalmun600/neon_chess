@@ -13,6 +13,7 @@
       in {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
+            svelte-language-server
             nodejs_22
             nixd
             alejandra
