@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { game } from "$lib/state/socket.svelte";
+  import { game } from "$lib/state/game.svelte";
 </script>
 
 <p>

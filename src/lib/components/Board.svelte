@@ -1,7 +1,8 @@
 <script lang="ts">
   // svelte libs
   import { onMount } from "svelte";
-  import { game, send } from "$lib/state/socket.svelte";
+  import { game } from "$lib/state/game.svelte";
+  import type { Opponent } from "$lib/state/opponent";
   // chess.js libs
   import { Chess } from "chess.js";
   // chessground libs
@@ -11,6 +12,8 @@
   import "chessground/assets/chessground.base.css";
   import "chessground/assets/chessground.brown.css";
   import "chessground/assets/chessground.cburnett.css";
+
+  let { opponent }: { opponent: Opponent } = $props();
 
   let el: HTMLDivElement;
   let cg: Api;
@@ -53,7 +56,7 @@
         events: {
           after: (from, to) => {
             chess.move({ from, to });
-            send({ type: "move", from, to });
+            opponent.sendMove(from, to);
             updateBoard();
           },
         },
