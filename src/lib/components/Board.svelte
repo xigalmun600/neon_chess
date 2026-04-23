@@ -1,7 +1,10 @@
 <script lang="ts">
+  // svelte libs
   import { onMount } from "svelte";
   import { game, send } from "$lib/state/socket.svelte";
+  // chess.js libs
   import { Chess } from "chess.js";
+  // chessground libs
   import type { Api } from "chessground/api";
   import type { Key } from "chessground/types";
   import { Chessground } from "chessground";
@@ -36,6 +39,8 @@
         dests: myTurn ? getLegalMoves() : new Map(),
       },
     });
+
+    game.turn = turnColor;
   };
 
   onMount(() => {

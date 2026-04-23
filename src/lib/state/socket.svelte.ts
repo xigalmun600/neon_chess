@@ -1,9 +1,10 @@
 type Status = "off" | "on" | "find" | "match";
+type Color = "white" | "black";
 
 export const game = $state({
   status: "off" as Status,
-  color: null as "white" | "black" | null,
-  turn: false,
+  color: null as Color | null,
+  turn: null as Color | null,
   lastMove: null as { from: string, to: string } | null,
 });
 
@@ -22,7 +23,6 @@ export function connect() {
 
   ws.onopen = () => {
     game.status = "on";
-    send({ "type": "find_match" });
   }
   ws.onclose = () => game.status = "off";
 
@@ -36,10 +36,13 @@ export function connect() {
       case "match":
         game.status = "match";
         game.color = msg.color;
+        game.turn = "white";
         break;
       case "move":
         game.lastMove = { from: msg.from, to: msg.to };
-        console.log(msg);
+        break;
+      case "turn":
+        game.turn = msg.color;
         break;
       default:
         console.warn("Unknown data received");
