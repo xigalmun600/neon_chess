@@ -24,4 +24,15 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
+# Postgres (local dev cluster)
+.postgres/
 
+# IA
+.claude/
+.mcp.json
+
+# VS code
+.vscode/
+
+# Extra
+multimedia
