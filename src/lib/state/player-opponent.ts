@@ -33,7 +33,7 @@ export class PlayerOpponent implements Opponent {
             resolve();
             break;
           case "move":
-            game.lastMove = { from: msg.from, to: msg.to };
+            game.lastMove = { from: msg.from, to: msg.to, promotion: msg.promotion };
             break;
           case "turn":
             game.turn = msg.color;
@@ -45,12 +45,12 @@ export class PlayerOpponent implements Opponent {
     });
   }
 
-  sendMove(from: string, to: string): void {
+  sendMove(from: string, to: string, promotion?: string): void {
     if (this.ws?.readyState !== WebSocket.OPEN) {
       console.warn("not connected");
       return;
     }
-    this.ws.send(JSON.stringify({ type: "move", from, to }));
+    this.ws.send(JSON.stringify({ type: "move", from, to, promotion }));
   }
 
   stop(): void {

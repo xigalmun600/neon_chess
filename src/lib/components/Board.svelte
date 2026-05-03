@@ -9,9 +9,9 @@
   import type { Api } from "chessground/api";
   import type { Key } from "chessground/types";
   import { Chessground } from "chessground";
-  import "chessground/assets/chessground.base.css";
-  import "chessground/assets/chessground.brown.css";
-  import "chessground/assets/chessground.cburnett.css";
+  import "$lib/assets/boards/chessground.base.css";
+  import "$lib/assets/boards/chessground.brown.css";
+  import "$lib/assets/boards/chessground.cburnett.css";
 
   let { opponent }: { opponent: Opponent } = $props();
 
@@ -19,6 +19,12 @@
   let cg: Api;
 
   const chess = new Chess();
+
+  const isPromotion = (from: string, to: string) => {
+    const piece = chess.get(from as never);
+    if (!piece || piece.type !== "p") return false;
+    return (piece.color === "w" && to[1] === "8") || (piece.color === "b" && to[1] === "1");
+  };
 
   const getLegalMoves = () => {
     const legalMoves = new Map<Key, Key[]>();
@@ -36,6 +42,7 @@
     const turnColor = chess.turn() === "w" ? "white" : "black";
 
     cg.set({
+      fen: chess.fen(),
       turnColor,
       movable: {
         color: myTurn ? game.color! : undefined,
@@ -55,13 +62,15 @@
         dests: new Map(),
         events: {
           after: (from, to) => {
-            chess.move({ from, to });
-            opponent.sendMove(from, to);
+            const promotion = isPromotion(from, to) ? "q" : undefined;
+            chess.move({ from, to, promotion });
+            opponent.sendMove(from, to, promotion);
             updateBoard();
           },
         },
       },
     });
+    if (game.color) updateBoard();
   });
 
   $effect(() => {
@@ -73,8 +82,9 @@
 
   $effect(() => {
     if (cg && game.lastMove) {
-      chess.move({ from: game.lastMove.from, to: game.lastMove.to });
-      cg.move(game.lastMove.from as Key, game.lastMove.to as Key);
+      const { from, to, promotion } = game.lastMove;
+      chess.move({ from, to, promotion });
+      cg.move(from as Key, to as Key);
       updateBoard();
     }
   });

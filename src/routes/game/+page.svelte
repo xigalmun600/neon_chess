@@ -6,6 +6,7 @@
   import Board from "$lib/components/Board.svelte";
   import type { Opponent } from "$lib/state/opponent";
   import { PlayerOpponent } from "$lib/state/player-opponent";
+  import { MachineOpponent } from "$lib/state/machine-opponent";
   import { resetGame } from "$lib/state/game.svelte";
 
   const mode = page.url.searchParams.get("mode");
@@ -16,8 +17,7 @@
     if (mode === "human") {
       opponent = new PlayerOpponent();
     } else if (mode === "machine") {
-      console.warn("machine mode not implemented :v");
-      return;
+      opponent = new MachineOpponent();
     } else {
       return;
     }
