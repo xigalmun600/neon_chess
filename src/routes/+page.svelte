@@ -1,8 +1,12 @@
 <script lang="ts">
 </script>
 
-<main class="flex min-h-screen flex-col items-center justify-center gap-12 bg-black px-6">
-  <h1 class="text-5xl font-bold tracking-widest text-cyan-300 drop-shadow-[0_0_15px_rgba(34,211,238,0.8)]">
+<main
+  class="flex min-h-screen flex-col items-center justify-center gap-12 bg-black px-6"
+>
+  <h1
+    class="text-5xl font-bold tracking-widest text-cyan-300 drop-shadow-[0_0_15px_rgba(34,211,238,0.8)]"
+  >
     NEON CHESS
   </h1>
 
