@@ -10,8 +10,8 @@
   import type { Key } from "chessground/types";
   import { Chessground } from "chessground";
   import "$lib/assets/boards/chessground.base.css";
-  import "$lib/assets/boards/chessground.brown.css";
-  import "$lib/assets/pieces/chessground.alpha.css";
+  import "$lib/assets/boards/chessground.neon.css";
+  import "$lib/assets/pieces/chessground.kiwen-suwi-neon.css";
 
   let { opponent }: { opponent: Opponent } = $props();
 
