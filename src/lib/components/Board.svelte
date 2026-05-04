@@ -11,7 +11,7 @@
   import { Chessground } from "chessground";
   import "$lib/assets/boards/chessground.base.css";
   import "$lib/assets/boards/chessground.neon.css";
-  import "$lib/assets/pieces/chessground.kiwen-suwi-neon.css";
+  import "$lib/assets/pieces/chessground.kiwen-suwi-neon-glowy.css";
 
   let { opponent }: { opponent: Opponent } = $props();
 
