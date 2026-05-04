@@ -4,6 +4,13 @@ import type { Opponent } from '$lib/state/opponent';
 export class MachineOpponent implements Opponent {
     private worker: Worker | null = null;
     private moves: string[] = [];
+    private skillLevel: number;
+    private moveTimeMs: number;
+
+    constructor(opts: { skillLevel?: number; moveTimeMs?: number } = {}) {
+        this.skillLevel = opts.skillLevel ?? 1;
+        this.moveTimeMs = opts.moveTimeMs ?? 100;
+    }
 
     start(): Promise<void> {
         return new Promise((resolve) => {
@@ -24,6 +31,7 @@ export class MachineOpponent implements Opponent {
             w.addEventListener('message', onReady);
 
             w.postMessage('uci');
+            w.postMessage(`setoption name Skill Level value ${this.skillLevel}`);
             w.postMessage('isready');
         });
     }
@@ -31,7 +39,7 @@ export class MachineOpponent implements Opponent {
     sendMove(from: string, to: string, promotion?: string) {
         this.moves.push(from + to + (promotion ?? ''));
         this.worker?.postMessage(`position startpos moves ${this.moves.join(' ')}`);
-        this.worker?.postMessage('go movetime 500');
+        this.worker?.postMessage(`go movetime ${this.moveTimeMs}`);
     }
 
     stop() { this.worker?.terminate(); this.worker = null; }

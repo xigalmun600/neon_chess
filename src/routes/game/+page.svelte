@@ -17,7 +17,7 @@
     if (mode === "human") {
       opponent = new PlayerOpponent();
     } else if (mode === "machine") {
-      opponent = new MachineOpponent();
+      opponent = new MachineOpponent({ skillLevel: 5, moveTimeMs: 300 });
     } else {
       return;
     }
