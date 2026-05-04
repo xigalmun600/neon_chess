@@ -30,7 +30,7 @@
   });
 </script>
 
-<main class="flex min-h-screen flex-col items-center justify-center">
+<main class="flex min-h-[calc(100vh-3rem)] flex-col items-center justify-center">
   {#if mode !== "human" && mode !== "machine"}
     <p class="mt-10 text-red-400">
       Invalid mode: expected ?mode=human or ?mode=machine

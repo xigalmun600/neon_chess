@@ -1,28 +1,70 @@
 <script lang="ts">
+	import StatCard from "$lib/components/widgets/StatCard.svelte";
+	import PlayCard from "$lib/components/widgets/PlayCard.svelte";
+	import RecentGames from "$lib/components/widgets/RecentGames.svelte";
+	import DailyPuzzle from "$lib/components/widgets/DailyPuzzle.svelte";
+
+	let { data } = $props();
 </script>
 
-<main
-  class="flex min-h-screen flex-col items-center justify-center gap-12 bg-black px-6"
->
-  <h1
-    class="text-5xl font-bold tracking-widest text-cyan-300 drop-shadow-[0_0_15px_rgba(34,211,238,0.8)]"
-  >
-    NEON CHESS
-  </h1>
+<main class="mx-auto w-full max-w-[1400px] px-6 py-10 lg:px-10">
+	<section class="mb-10">
+		<h1
+			class="text-5xl font-bold uppercase tracking-widest text-cyan-300"
+			style="text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);"
+		>
+			Neon Chess
+		</h1>
+		<p class="mt-2 text-sm uppercase tracking-widest text-gray-400">
+			Initialize protocol · Choose your opponent
+		</p>
+	</section>
 
-  <div class="flex flex-col gap-6 sm:flex-row">
-    <a
-      href="/game?mode=human"
-      class="rounded-lg border-2 border-cyan-400 px-10 py-4 text-lg font-semibold uppercase tracking-wider text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.5)] transition hover:bg-cyan-400 hover:text-black hover:shadow-[0_0_25px_rgba(34,211,238,0.9)]"
-    >
-      Play vs Human
-    </a>
+	<section class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+		<StatCard
+			label="Current Elo"
+			value={data.stats.elo}
+			icon="bolt"
+			accent="primary"
+		/>
+		<StatCard
+			label="Global Rank"
+			value={data.stats.rank ?? "—"}
+			icon="public"
+			accent="white"
+		/>
+		<StatCard
+			label="Win Rate"
+			value={data.stats.winRate ?? "—"}
+			suffix={data.stats.winRate !== null ? "%" : ""}
+			icon="flare"
+			accent="secondary"
+		/>
+	</section>
 
-    <a
-      href="/game?mode=machine"
-      class="rounded-lg border-2 border-fuchsia-400 px-10 py-4 text-lg font-semibold uppercase tracking-wider text-fuchsia-300 shadow-[0_0_15px_rgba(232,121,249,0.5)] transition hover:bg-fuchsia-400 hover:text-black hover:shadow-[0_0_25px_rgba(232,121,249,0.9)]"
-    >
-      Play vs Machine
-    </a>
-  </div>
+	<section class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+		<div class="flex flex-col gap-6 xl:col-span-2">
+			<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+				<PlayCard
+					href="/game?mode=human"
+					title="Play vs Human"
+					subtitle="Online matchmaking"
+					icon="swords"
+					accent="primary"
+				/>
+				<PlayCard
+					href="/game?mode=machine"
+					title="Play vs Machine"
+					subtitle="Stockfish engine"
+					icon="memory"
+					accent="secondary"
+				/>
+			</div>
+			<RecentGames games={data.recentGames} />
+		</div>
+
+		<aside class="flex flex-col gap-6">
+			<DailyPuzzle rating={data.puzzle.rating} theme={data.puzzle.theme} />
+		</aside>
+	</section>
 </main>
