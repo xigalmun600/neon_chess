@@ -6,6 +6,7 @@
     rhythm,
     queueMove,
     consumeQueued,
+    clearQueued,
   } from "$lib/state/rhythm.svelte";
   import type { Opponent } from "$lib/state/opponent";
   // chess.js libs
@@ -48,30 +49,39 @@
     return legalMoves;
   };
 
+  const opposite = (c: "white" | "black") =>
+    c === "white" ? "black" : "white";
+
   const updateBoard = () => {
-    const myTurn =
-      (game.color === "white" && chess.turn() === "w") ||
-      (game.color === "black" && chess.turn() === "b");
     const turnColor = chess.turn() === "w" ? "white" : "black";
 
-    const queuedForMe =
-      rhythmMode && game.color
-        ? game.color === "white"
-          ? rhythm.whiteQueued
-          : rhythm.blackQueued
-        : null;
-
-    cg.set({
-      fen: chess.fen(),
-      turnColor,
-      movable: {
-        color: myTurn ? game.color! : undefined,
-        dests: myTurn ? getLegalMoves() : new Map(),
-      },
-      lastMove: queuedForMe
-        ? [queuedForMe.from as Key, queuedForMe.to as Key]
-        : undefined,
-    });
+    if (rhythmMode && game.color) {
+      const isMyLogicalTurn = turnColor === game.color;
+      cg.set({
+        fen: chess.fen(),
+        turnColor: isMyLogicalTurn ? opposite(game.color) : turnColor,
+        movable: {
+          color: isMyLogicalTurn ? game.color : undefined,
+          dests: new Map(),
+        },
+        premovable: {
+          enabled: isMyLogicalTurn,
+          customDests: isMyLogicalTurn ? getLegalMoves() : undefined,
+        },
+      });
+    } else {
+      const myTurn =
+        (game.color === "white" && chess.turn() === "w") ||
+        (game.color === "black" && chess.turn() === "b");
+      cg.set({
+        fen: chess.fen(),
+        turnColor,
+        movable: {
+          color: myTurn ? game.color! : undefined,
+          dests: myTurn ? getLegalMoves() : new Map(),
+        },
+      });
+    }
 
     game.turn = turnColor;
 
@@ -85,6 +95,7 @@
 
   const applyMove = (move: { from: string; to: string; promotion?: string }) => {
     chess.move(move);
+    if (rhythmMode) cg.cancelPremove();
     cg.move(move.from as Key, move.to as Key);
     updateBoard();
   };
@@ -99,19 +110,24 @@
         events: {
           after: (from, to) => {
             const promotion = isPromotion(from, to) ? "q" : undefined;
-            if (rhythmMode) {
-              if (game.color) {
-                queueMove(game.color, { from, to, promotion });
-              }
-              cg.set({
-                fen: chess.fen(),
-                lastMove: [from as Key, to as Key],
-              });
-            } else {
-              chess.move({ from, to, promotion });
-              opponent.sendMove(from, to, promotion);
-              updateBoard();
-            }
+            chess.move({ from, to, promotion });
+            opponent.sendMove(from, to, promotion);
+            updateBoard();
+          },
+        },
+      },
+      premovable: {
+        enabled: false,
+        showDests: true,
+        events: {
+          set: (from, to) => {
+            if (!rhythmMode || !game.color) return;
+            const promotion = isPromotion(from, to) ? "q" : undefined;
+            queueMove(game.color, { from, to, promotion });
+          },
+          unset: () => {
+            if (!rhythmMode || !game.color) return;
+            clearQueued(game.color);
           },
         },
       },

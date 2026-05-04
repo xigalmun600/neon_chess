@@ -88,6 +88,11 @@ export function consumeQueued(color: Color): QueuedMove | null {
   return move;
 }
 
+export function clearQueued(color: Color): void {
+  if (color === "white") rhythm.whiteQueued = null;
+  else rhythm.blackQueued = null;
+}
+
 export function timeUntilNextBeatFor(color: Color): number | null {
   if (!rhythm.running) return null;
   for (let i = rhythm.currentBeatIndex; i < beats.length; i++) {
