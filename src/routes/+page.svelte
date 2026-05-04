@@ -2,7 +2,6 @@
 	import StatCard from "$lib/components/widgets/StatCard.svelte";
 	import PlayCard from "$lib/components/widgets/PlayCard.svelte";
 	import RecentGames from "$lib/components/widgets/RecentGames.svelte";
-	import DailyPuzzle from "$lib/components/widgets/DailyPuzzle.svelte";
 
 	let { data } = $props();
 </script>
@@ -62,9 +61,5 @@
 			</div>
 			<RecentGames games={data.recentGames} />
 		</div>
-
-		<aside class="flex flex-col gap-6">
-			<DailyPuzzle rating={data.puzzle.rating} theme={data.puzzle.theme} />
-		</aside>
 	</section>
 </main>

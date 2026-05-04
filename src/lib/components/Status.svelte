@@ -4,13 +4,13 @@
 
 <p>
   Status:
-{#if game.status === "on"}
-  on
-{:else if game.status === "find"}
-  find
-{:else if game.status === "match" }
-  playing
-{:else }
-  off
-{/if}
+  {#if game.status === "on"}
+    on
+  {:else if game.status === "find"}
+    find
+  {:else if game.status === "match"}
+    playing
+  {:else}
+    off
+  {/if}
 </p>

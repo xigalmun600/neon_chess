@@ -14,3 +14,9 @@ CREATE TABLE friend_request (
   PRIMARY KEY (requester_id, addressee_id),
   CHECK (requester_id <> addressee_id)
 );
+CREATE TABLE session (
+  id TEXT PRIMARY KEY,
+  user_id INT NOT NULL REFERENCES player(id) ON DELETE CASCADE,
+  expires_at TIMESTAMPTZ NOT NULL
+);
+CREATE INDEX session_user_id_idx ON session(user_id);

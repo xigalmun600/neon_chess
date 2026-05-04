@@ -23,7 +23,10 @@
   const isPromotion = (from: string, to: string) => {
     const piece = chess.get(from as never);
     if (!piece || piece.type !== "p") return false;
-    return (piece.color === "w" && to[1] === "8") || (piece.color === "b" && to[1] === "1");
+    return (
+      (piece.color === "w" && to[1] === "8") ||
+      (piece.color === "b" && to[1] === "1")
+    );
   };
 
   const getLegalMoves = () => {

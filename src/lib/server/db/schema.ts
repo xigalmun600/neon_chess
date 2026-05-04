@@ -4,6 +4,7 @@ import {
   varchar,
   timestamp,
   integer,
+  text,
   primaryKey,
   check,
 } from "drizzle-orm/pg-core";
@@ -43,3 +44,11 @@ export const friendRequest = pgTable(
     check("friend_request_self_check", sql`${t.requesterId} <> ${t.addresseeId}`),
   ],
 );
+
+export const session = pgTable("session", {
+  id: text("id").primaryKey(),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => player.id, { onDelete: "cascade" }),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+});

@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { page } from "$app/state";
 
-	const user = $derived(page.data.user as { username: string } | undefined);
+	const user = $derived(
+		page.data.user as { username: string } | null | undefined,
+	);
 	const initial = $derived((user?.username ?? "?")[0].toUpperCase());
 </script>
 
@@ -16,45 +18,51 @@
 		<h2 class="text-xl font-bold tracking-[0.05em]">NEON CHESS</h2>
 	</a>
 
-	<nav class="hidden items-center gap-8 md:flex">
-		<a
-			href="/"
-			class="border-b-2 border-primary pb-1 text-sm font-bold uppercase tracking-widest text-primary"
-		>
-			Dashboard
-		</a>
-		<a
-			href="/game?mode=human"
-			class="text-sm font-medium uppercase tracking-widest text-gray-400 transition-colors hover:text-white"
-		>
-			Play
-		</a>
-		<span
-			class="cursor-not-allowed text-sm font-medium uppercase tracking-widest text-gray-600"
-			title="Coming soon">Puzzles</span
-		>
-		<span
-			class="cursor-not-allowed text-sm font-medium uppercase tracking-widest text-gray-600"
-			title="Coming soon">Learn</span
-		>
-	</nav>
-
-	<div class="flex items-center gap-3">
-		<div class="hidden flex-col items-end leading-tight sm:flex">
-			<span class="text-xs uppercase tracking-widest text-gray-500">Operative</span>
-			<span class="text-sm font-bold text-white">{user?.username ?? "guest"}</span>
-		</div>
-		<div class="relative">
-			<div
-				class="flex size-10 items-center justify-center rounded-lg border border-border-muted bg-surface-light font-bold text-primary"
-				style="text-shadow: 0 0 8px #00ffff;"
-			>
-				{initial}
+	{#if user}
+		<div class="flex items-center gap-3">
+			<div class="hidden flex-col items-end leading-tight sm:flex">
+				<span class="text-xs uppercase tracking-widest text-gray-500"
+					>Operative</span
+				>
+				<span class="text-sm font-bold text-white">{user.username}</span>
 			</div>
-			<div
-				class="absolute -bottom-1 -right-1 size-3 rounded-full border-2 border-surface-dark bg-primary"
-				style="box-shadow: 0 0 6px #00ffff;"
-			></div>
+			<div class="relative">
+				<div
+					class="flex size-10 items-center justify-center rounded-lg border border-border-muted bg-surface-light font-bold text-primary"
+					style="text-shadow: 0 0 8px #00ffff;"
+				>
+					{initial}
+				</div>
+				<div
+					class="absolute -bottom-1 -right-1 size-3 rounded-full border-2 border-surface-dark bg-primary"
+					style="box-shadow: 0 0 6px #00ffff;"
+				></div>
+			</div>
+			<form method="POST" action="/logout">
+				<button
+					type="submit"
+					title="Log out"
+					class="flex size-10 items-center justify-center rounded-lg border border-border-muted bg-surface-light text-gray-400 transition hover:border-secondary hover:text-secondary"
+				>
+					<span class="material-symbols-outlined !text-xl">logout</span>
+				</button>
+			</form>
 		</div>
-	</div>
+	{:else}
+		<div class="flex items-center gap-2">
+			<a
+				href="/login"
+				class="rounded-lg border border-border-muted bg-surface-light px-4 py-2 text-xs font-bold uppercase tracking-widest text-gray-300 transition hover:border-primary hover:text-primary"
+			>
+				Log in
+			</a>
+			<a
+				href="/register"
+				class="rounded-lg border border-primary bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-primary transition hover:bg-primary/20 hover:shadow-neon-sm"
+				style="text-shadow: 0 0 6px #00ffff;"
+			>
+				Register
+			</a>
+		</div>
+	{/if}
 </header>
