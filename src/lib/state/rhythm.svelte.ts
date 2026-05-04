@@ -9,12 +9,15 @@ export const rhythm = $state({
   beatsTotal: 0,
   whiteQueued: null as QueuedMove | null,
   blackQueued: null as QueuedMove | null,
+  whiteQueuedAt: null as number | null,
+  blackQueuedAt: null as number | null,
 });
 
 let audio: HTMLAudioElement | null = null;
 let beats: number[] = [];
 let rafId: number | null = null;
 let onBeatCallback: ((index: number, color: Color) => void) | null = null;
+let latencyOffset = 0;
 
 export async function loadTrack(jsonUrl: string): Promise<{
   audioUrl: string;
@@ -30,23 +33,28 @@ export function start(
   audioEl: HTMLAudioElement,
   beatList: number[],
   onBeat: (index: number, color: Color) => void,
+  options: { latencyOffsetSeconds?: number } = {},
 ): void {
   audio = audioEl;
   beats = beatList;
   onBeatCallback = onBeat;
+  latencyOffset = options.latencyOffsetSeconds ?? -0.08;
   rhythm.running = true;
   rhythm.currentBeatIndex = 0;
   rhythm.beatsTotal = beatList.length;
   rhythm.currentTime = 0;
   rhythm.whiteQueued = null;
   rhythm.blackQueued = null;
+  rhythm.whiteQueuedAt = null;
+  rhythm.blackQueuedAt = null;
 
   const tick = () => {
     if (!rhythm.running || !audio) return;
-    rhythm.currentTime = audio.currentTime;
+    const adjusted = audio.currentTime - latencyOffset;
+    rhythm.currentTime = adjusted;
     while (
       rhythm.currentBeatIndex < beats.length &&
-      audio.currentTime >= beats[rhythm.currentBeatIndex]
+      adjusted >= beats[rhythm.currentBeatIndex]
     ) {
       const i = rhythm.currentBeatIndex;
       const color: Color = i % 2 === 0 ? "white" : "black";
@@ -74,23 +82,51 @@ export function stop(): void {
   rhythm.beatsTotal = 0;
   rhythm.whiteQueued = null;
   rhythm.blackQueued = null;
+  rhythm.whiteQueuedAt = null;
+  rhythm.blackQueuedAt = null;
 }
 
 export function queueMove(color: Color, move: QueuedMove): void {
-  if (color === "white") rhythm.whiteQueued = move;
-  else rhythm.blackQueued = move;
+  const stamp = audio ? audio.currentTime : 0;
+  if (color === "white") {
+    rhythm.whiteQueued = move;
+    rhythm.whiteQueuedAt = stamp;
+  } else {
+    rhythm.blackQueued = move;
+    rhythm.blackQueuedAt = stamp;
+  }
 }
 
-export function consumeQueued(color: Color): QueuedMove | null {
+export function consumeQueued(
+  color: Color,
+): { move: QueuedMove; queuedAt: number } | null {
   const move = color === "white" ? rhythm.whiteQueued : rhythm.blackQueued;
-  if (color === "white") rhythm.whiteQueued = null;
-  else rhythm.blackQueued = null;
-  return move;
+  const queuedAt =
+    color === "white" ? rhythm.whiteQueuedAt : rhythm.blackQueuedAt;
+  if (color === "white") {
+    rhythm.whiteQueued = null;
+    rhythm.whiteQueuedAt = null;
+  } else {
+    rhythm.blackQueued = null;
+    rhythm.blackQueuedAt = null;
+  }
+  if (move == null || queuedAt == null) return null;
+  return { move, queuedAt };
 }
 
 export function clearQueued(color: Color): void {
-  if (color === "white") rhythm.whiteQueued = null;
-  else rhythm.blackQueued = null;
+  if (color === "white") {
+    rhythm.whiteQueued = null;
+    rhythm.whiteQueuedAt = null;
+  } else {
+    rhythm.blackQueued = null;
+    rhythm.blackQueuedAt = null;
+  }
+}
+
+export function getBeatTime(index: number): number | null {
+  if (index < 0 || index >= beats.length) return null;
+  return beats[index];
 }
 
 export function timeUntilNextBeatFor(color: Color): number | null {

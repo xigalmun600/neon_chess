@@ -31,7 +31,7 @@
       opponent = new PlayerOpponent();
       await opponent.start();
     } else if (mode === "machine") {
-      opponent = new MachineOpponent({ skillLevel: 1, moveTimeMs: 100 });
+      opponent = new MachineOpponent({ skillLevel: 1, moveTimeMs: 50 });
       await opponent.start();
       const track = await loadTrack("/music/funk-infernal.json");
       beats = track.beats;

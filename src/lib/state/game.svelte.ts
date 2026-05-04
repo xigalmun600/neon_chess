@@ -2,6 +2,8 @@ import type { Color } from "$lib/state/opponent";
 
 export type Status = "off" | "on" | "find" | "match";
 
+export type HitGrade = "perfect" | "great" | "good" | "ok" | "miss";
+
 export const game = $state({
   status: "off" as Status,
   color: null as Color | null,
@@ -9,6 +11,9 @@ export const game = $state({
   lastMove: null as { from: string; to: string; promotion?: string } | null,
   moveCount: 0,
   lastMoveColor: null as Color | null,
+  score: 0,
+  lastHit: null as { grade: HitGrade; points: number; errorMs: number } | null,
+  lastHitAt: 0,
 });
 
 export function resetGame() {
@@ -18,4 +23,7 @@ export function resetGame() {
   game.lastMove = null;
   game.moveCount = 0;
   game.lastMoveColor = null;
+  game.score = 0;
+  game.lastHit = null;
+  game.lastHitAt = 0;
 }

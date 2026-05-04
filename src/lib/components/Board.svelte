@@ -7,7 +7,9 @@
     queueMove,
     consumeQueued,
     clearQueued,
+    getBeatTime,
   } from "$lib/state/rhythm.svelte";
+  import type { HitGrade } from "$lib/state/game.svelte";
   import type { Opponent } from "$lib/state/opponent";
   // chess.js libs
   import { Chess } from "chess.js";
@@ -151,17 +153,40 @@
     }
   });
 
+  const gradeError = (
+    errorMs: number,
+  ): { grade: HitGrade; points: number } => {
+    if (errorMs <= 80) return { grade: "perfect", points: 100 };
+    if (errorMs <= 200) return { grade: "great", points: 60 };
+    if (errorMs <= 400) return { grade: "good", points: 30 };
+    return { grade: "ok", points: 10 };
+  };
+
   $effect(() => {
     if (!rhythmMode || !cg) return;
     const idx = rhythm.currentBeatIndex;
     if (idx <= lastSeenBeatIndex) return;
     for (let i = lastSeenBeatIndex; i < idx; i++) {
       const beatColor = i % 2 === 0 ? "white" : "black";
-      const queued = consumeQueued(beatColor);
-      if (queued) {
-        applyMove(queued);
+      const result = consumeQueued(beatColor);
+      if (result) {
         if (beatColor === game.color) {
-          opponent.sendMove(queued.from, queued.to, queued.promotion);
+          const beatTime = getBeatTime(i);
+          if (beatTime != null) {
+            const errorMs = Math.abs(beatTime - result.queuedAt) * 1000;
+            const { grade, points } = gradeError(errorMs);
+            game.score += points;
+            game.lastHit = { grade, points, errorMs };
+            game.lastHitAt = Date.now();
+          }
+        }
+        applyMove(result.move);
+        if (beatColor === game.color) {
+          opponent.sendMove(
+            result.move.from,
+            result.move.to,
+            result.move.promotion,
+          );
         }
       }
     }
