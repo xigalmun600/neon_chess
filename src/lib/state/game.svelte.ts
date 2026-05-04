@@ -7,6 +7,8 @@ export const game = $state({
   color: null as Color | null,
   turn: null as Color | null,
   lastMove: null as { from: string; to: string; promotion?: string } | null,
+  moveCount: 0,
+  lastMoveColor: null as Color | null,
 });
 
 export function resetGame() {
@@ -14,4 +16,6 @@ export function resetGame() {
   game.color = null;
   game.turn = null;
   game.lastMove = null;
+  game.moveCount = 0;
+  game.lastMoveColor = null;
 }

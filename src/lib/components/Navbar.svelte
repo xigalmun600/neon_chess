@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state";
+	import logo from "$lib/assets/logo.svg";
 
 	const user = $derived(
 		page.data.user as { username: string } | null | undefined,
@@ -11,10 +12,12 @@
 	class="sticky top-0 z-50 flex items-center justify-between border-b border-border-muted bg-surface-dark/80 px-6 py-3 backdrop-blur-md"
 >
 	<a href="/" class="flex items-center gap-3 text-white">
-		<span
-			class="material-symbols-outlined !text-3xl text-primary"
-			style="text-shadow: 0 0 10px #00ffff;">diamond</span
-		>
+		<img
+			src={logo}
+			alt=""
+			class="h-8 w-8"
+			style="filter: drop-shadow(0 0 10px #00ffff);"
+		/>
 		<h2 class="text-xl font-bold tracking-[0.05em]">NEON CHESS</h2>
 	</a>
 

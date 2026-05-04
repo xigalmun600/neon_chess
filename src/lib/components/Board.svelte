@@ -19,6 +19,7 @@
   let cg: Api;
 
   const chess = new Chess();
+  let lastSeenHistoryLength = 0;
 
   const isPromotion = (from: string, to: string) => {
     const piece = chess.get(from as never);
@@ -54,6 +55,13 @@
     });
 
     game.turn = turnColor;
+
+    const historyLength = chess.history().length;
+    if (historyLength > lastSeenHistoryLength) {
+      lastSeenHistoryLength = historyLength;
+      game.lastMoveColor = chess.turn() === "w" ? "black" : "white";
+      game.moveCount = historyLength;
+    }
   };
 
   onMount(() => {
