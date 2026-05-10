@@ -1,3 +1,5 @@
+import { wsUrl } from "$lib/state/ws-url";
+
 type Status = "off" | "on" | "find" | "match";
 type Color = "white" | "black";
 
@@ -19,7 +21,7 @@ export function send(msg: object) {
 }
 
 export function connect() {
-  ws = new WebSocket("ws://localhost:8080");
+  ws = new WebSocket(wsUrl());
 
   ws.onopen = () => {
     game.status = "on";

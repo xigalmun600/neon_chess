@@ -1,12 +1,13 @@
 import { game } from "$lib/state/game.svelte";
 import type { Opponent } from "$lib/state/opponent";
+import { wsUrl } from "$lib/state/ws-url";
 
 export class PlayerOpponent implements Opponent {
   private ws: WebSocket | null = null;
 
   start(): Promise<void> {
     return new Promise((resolve, reject) => {
-      const ws = new WebSocket("ws://localhost:8080");
+      const ws = new WebSocket(wsUrl());
       this.ws = ws;
 
       ws.onopen = () => {

@@ -20,6 +20,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script_stop: true
+          command_timeout: 5m
           script: |
             set -euo pipefail
             cd /srv/neon-chess
@@ -27,5 +28,5 @@ jobs:
             git reset --hard origin/main
             nix develop --command npm ci
             nix develop --command npm run build
-            sudo /bin/systemctl restart neon-chess
-            sudo /bin/systemctl is-active neon-chess
+            sudo /bin/systemctl restart neon-chess </dev/null
+            sudo /bin/systemctl is-active neon-chess </dev/null
