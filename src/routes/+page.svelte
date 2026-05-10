@@ -15,7 +15,7 @@
 			Neon Chess
 		</h1>
 		<p class="mt-2 text-sm uppercase tracking-widest text-gray-400">
-			Initialize protocol · Choose your opponent
+			Play rhythm chess with your friends!
 		</p>
 	</section>
 
