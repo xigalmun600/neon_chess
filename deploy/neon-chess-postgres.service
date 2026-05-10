@@ -1,0 +1,16 @@
+[Unit]
+Description=neon-chess Postgres (via Nix flake, project-local cluster)
+After=network.target
+
+[Service]
+Type=forking
+User=neonchess
+Group=neonchess
+WorkingDirectory=/srv/neon-chess
+ExecStart=/usr/bin/nix develop --command pg_start
+ExecStop=/usr/bin/nix develop --command pg_stop
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,20 @@
+[Unit]
+Description=neon-chess SvelteKit server (via Nix)
+After=network-online.target neon-chess-postgres.service
+Wants=network-online.target
+Requires=neon-chess-postgres.service
+
+[Service]
+Type=simple
+User=neonchess
+Group=neonchess
+WorkingDirectory=/srv/neon-chess
+EnvironmentFile=/etc/neon-chess.env
+ExecStart=/usr/bin/nix develop --command node build/index.js
+Restart=on-failure
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,31 @@
+galisma.com, www.galisma.com {
+    encode zstd gzip
+
+    root * /var/www/galisma
+    file_server
+
+    @immutable path /_app/immutable/*
+    header @immutable Cache-Control "public, immutable, max-age=31536000"
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+}
+
+chess.galisma.com {
+    encode zstd gzip
+
+    @ws path /ws /ws/*
+    reverse_proxy @ws 127.0.0.1:8080
+
+    reverse_proxy 127.0.0.1:3000
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        X-Frame-Options "SAMEORIGIN"
+    }
+}
