@@ -25,6 +25,7 @@ export class MachineOpponent implements Opponent {
                     game.status = 'match';
                     game.color = 'white';
                     game.turn = 'white';
+                    game.opponentName = 'Stockfish';
                     resolve();
                 }
             };
@@ -40,6 +41,16 @@ export class MachineOpponent implements Opponent {
         this.moves.push(from + to + (promotion ?? ''));
         this.worker?.postMessage(`position startpos moves ${this.moves.join(' ')}`);
         this.worker?.postMessage(`go movetime ${this.moveTimeMs}`);
+    }
+
+    resign() {
+        this.worker?.terminate();
+        this.worker = null;
+        game.status = 'ended';
+        game.result = {
+            winner: game.color === 'white' ? 'black' : 'white',
+            reason: 'resign',
+        };
     }
 
     stop() { this.worker?.terminate(); this.worker = null; }

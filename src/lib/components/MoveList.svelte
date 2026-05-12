@@ -1,5 +1,12 @@
 <script lang="ts">
   import { game } from "$lib/state/game.svelte";
+  import type { Opponent } from "$lib/state/opponent";
+  import GameControls from "$lib/components/GameControls.svelte";
+
+  let {
+    opponent,
+    mode,
+  }: { opponent: Opponent; mode: "human" | "machine" } = $props();
 
   let listEl: HTMLDivElement;
 
@@ -21,29 +28,42 @@
   });
 </script>
 
-<div
-  class="flex h-[700px] flex-col rounded-xl border border-border-muted bg-surface-dark/80 p-3 backdrop-blur-md"
+<details
+  class="group rounded-xl border border-border-muted bg-surface-dark/80 backdrop-blur-md lg:contents"
 >
-  <h4
-    class="mb-2 px-1 text-xs font-bold uppercase tracking-widest text-gray-400"
+  <summary
+    class="flex cursor-pointer list-none items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-widest text-gray-400 lg:hidden"
   >
-    Move list
-  </h4>
-  <div bind:this={listEl} class="flex-1 overflow-y-auto pr-1">
-    {#if pairs.length === 0}
-      <p class="mt-4 text-center text-xs text-gray-500">No moves yet.</p>
-    {:else}
-      <ol class="font-mono text-sm">
-        {#each pairs as p (p.num)}
-          <li
-            class="grid grid-cols-[2.5rem_1fr_1fr] gap-2 rounded px-1 py-0.5 odd:bg-surface-light/30"
-          >
-            <span class="text-right text-gray-500">{p.num}.</span>
-            <span class="text-primary">{p.white}</span>
-            <span class="text-secondary">{p.black ?? ""}</span>
-          </li>
-        {/each}
-      </ol>
-    {/if}
+    <span>Move list</span>
+    <span class="text-gray-500 group-open:rotate-180 transition-transform"
+      >▾</span
+    >
+  </summary>
+  <div
+    class="flex h-[40vh] flex-col gap-2 p-3 lg:h-[700px] lg:rounded-xl lg:border lg:border-border-muted lg:bg-surface-dark/80 lg:backdrop-blur-md"
+  >
+    <h4
+      class="hidden px-1 text-xs font-bold uppercase tracking-widest text-gray-400 lg:block"
+    >
+      Move list
+    </h4>
+    <GameControls {opponent} {mode} />
+    <div bind:this={listEl} class="flex-1 overflow-y-auto pr-1">
+      {#if pairs.length === 0}
+        <p class="mt-4 text-center text-xs text-gray-500">No moves yet.</p>
+      {:else}
+        <ol class="font-mono text-sm">
+          {#each pairs as p (p.num)}
+            <li
+              class="grid grid-cols-[2.5rem_1fr_1fr] gap-2 rounded px-1 py-0.5 odd:bg-surface-light/30"
+            >
+              <span class="text-right text-gray-500">{p.num}.</span>
+              <span class="text-primary">{p.white}</span>
+              <span class="text-secondary">{p.black ?? ""}</span>
+            </li>
+          {/each}
+        </ol>
+      {/if}
+    </div>
   </div>
-</div>
+</details>

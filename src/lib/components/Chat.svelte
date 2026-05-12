@@ -24,50 +24,60 @@
   });
 </script>
 
-<div
-  class="flex h-[700px] flex-col rounded-xl border border-border-muted bg-surface-dark/80 p-3 backdrop-blur-md"
+<details
+  class="group rounded-xl border border-border-muted bg-surface-dark/80 backdrop-blur-md lg:contents"
 >
-  <h4
-    class="mb-2 px-1 text-xs font-bold uppercase tracking-widest text-gray-400"
+  <summary
+    class="flex cursor-pointer list-none items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-widest text-gray-400 lg:hidden"
   >
-    Chat
-  </h4>
-  <div
-    bind:this={listEl}
-    class="flex flex-1 flex-col gap-2 overflow-y-auto pr-1"
-  >
-    {#if game.messages.length === 0}
-      <p class="mt-4 text-center text-xs text-gray-500">No messages yet.</p>
-    {/if}
-    {#each game.messages as msg (msg.at)}
-      <div
-        class="flex {msg.from === 'me' ? 'justify-end' : 'justify-start'}"
-      >
-        <div
-          class="max-w-[80%] break-words rounded-lg border px-3 py-1.5 text-sm {msg.from ===
-          'me'
-            ? 'border-primary/30 bg-primary/10 text-primary'
-            : 'border-secondary/30 bg-secondary/10 text-secondary'}"
-        >
-          {msg.text}
-        </div>
-      </div>
-    {/each}
-  </div>
-  <form onsubmit={send} class="mt-2 flex gap-2">
-    <input
-      type="text"
-      bind:value={draft}
-      maxlength={MAX_LENGTH}
-      placeholder="Say something…"
-      class="flex-1 rounded-lg border border-border-muted bg-surface-light px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-primary/60"
-    />
-    <button
-      type="submit"
-      disabled={!draft.trim()}
-      class="rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-primary transition hover:bg-primary/20 disabled:cursor-not-allowed disabled:opacity-40"
+    <span>Chat</span>
+    <span class="text-gray-500 group-open:rotate-180 transition-transform"
+      >▾</span
     >
-      Send
-    </button>
-  </form>
-</div>
+  </summary>
+  <div
+    class="flex h-[40vh] flex-col p-3 lg:h-[700px] lg:rounded-xl lg:border lg:border-border-muted lg:bg-surface-dark/80 lg:backdrop-blur-md"
+  >
+    <h4
+      class="mb-2 hidden px-1 text-xs font-bold uppercase tracking-widest text-gray-400 lg:block"
+    >
+      Chat
+    </h4>
+    <div
+      bind:this={listEl}
+      class="flex flex-1 flex-col gap-2 overflow-y-auto pr-1"
+    >
+      {#if game.messages.length === 0}
+        <p class="mt-4 text-center text-xs text-gray-500">No messages yet.</p>
+      {/if}
+      {#each game.messages as msg (msg.at)}
+        <div class="flex {msg.from === 'me' ? 'justify-end' : 'justify-start'}">
+          <div
+            class="max-w-[80%] break-words rounded-lg border px-3 py-1.5 text-sm {msg.from ===
+            'me'
+              ? 'border-primary/30 bg-primary/10 text-primary'
+              : 'border-secondary/30 bg-secondary/10 text-secondary'}"
+          >
+            {msg.text}
+          </div>
+        </div>
+      {/each}
+    </div>
+    <form onsubmit={send} class="mt-2 flex gap-2">
+      <input
+        type="text"
+        bind:value={draft}
+        maxlength={MAX_LENGTH}
+        placeholder="Say something…"
+        class="flex-1 rounded-lg border border-border-muted bg-surface-light px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-primary/60"
+      />
+      <button
+        type="submit"
+        disabled={!draft.trim()}
+        class="rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-primary transition hover:bg-primary/20 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        Send
+      </button>
+    </form>
+  </div>
+</details>

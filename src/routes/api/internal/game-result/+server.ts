@@ -20,6 +20,7 @@ const VALID_REASONS = new Set([
   "insufficient",
   "fifty_move",
   "resign",
+  "agreement",
   "timeout",
   "disconnect",
 ]);

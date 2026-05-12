@@ -24,6 +24,7 @@ export const game = $state({
   opponentName: null as string | null,
   moves: [] as string[],
   messages: [] as ChatMessage[],
+  drawOfferFrom: null as "me" | "opponent" | null,
 });
 
 export function resetGame() {
@@ -37,4 +38,5 @@ export function resetGame() {
   game.opponentName = null;
   game.moves = [];
   game.messages = [];
+  game.drawOfferFrom = null;
 }

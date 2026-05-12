@@ -57,10 +57,19 @@ export class PlayerOpponent implements Opponent {
           case "game_over":
             game.status = "ended";
             game.result = { winner: msg.result, reason: msg.reason };
+            game.drawOfferFrom = null;
             break;
           case "opponent_left":
             game.status = "ended";
             game.result = { winner: "opponent_left", reason: "disconnect" };
+            game.drawOfferFrom = null;
+            break;
+          case "draw_offered":
+            game.drawOfferFrom = "opponent";
+            break;
+          case "draw_declined":
+          case "draw_withdrawn":
+            game.drawOfferFrom = null;
             break;
           case "chat":
             game.messages.push({
@@ -90,6 +99,28 @@ export class PlayerOpponent implements Opponent {
       return;
     }
     this.ws.send(JSON.stringify({ type: "chat", text }));
+  }
+
+  resign(): void {
+    if (this.ws?.readyState !== WebSocket.OPEN) return;
+    this.ws.send(JSON.stringify({ type: "resign" }));
+  }
+
+  offerDraw(): void {
+    if (this.ws?.readyState !== WebSocket.OPEN) return;
+    this.ws.send(JSON.stringify({ type: "draw_offer" }));
+    game.drawOfferFrom = "me";
+  }
+
+  acceptDraw(): void {
+    if (this.ws?.readyState !== WebSocket.OPEN) return;
+    this.ws.send(JSON.stringify({ type: "draw_accept" }));
+  }
+
+  declineDraw(): void {
+    if (this.ws?.readyState !== WebSocket.OPEN) return;
+    this.ws.send(JSON.stringify({ type: "draw_decline" }));
+    game.drawOfferFrom = null;
   }
 
   stop(): void {

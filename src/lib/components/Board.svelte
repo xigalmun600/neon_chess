@@ -103,4 +103,4 @@
   });
 </script>
 
-<div bind:this={el} style="width: 700px; height: 700px"></div>
+<div bind:this={el} class="aspect-square w-full max-w-[700px]"></div>
