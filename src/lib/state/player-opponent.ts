@@ -45,6 +45,7 @@ export class PlayerOpponent implements Opponent {
             game.status = "match";
             game.color = msg.color;
             game.turn = "white";
+            game.opponentName = msg.opponent ?? null;
             resolve();
             break;
           case "move":
@@ -61,6 +62,13 @@ export class PlayerOpponent implements Opponent {
             game.status = "ended";
             game.result = { winner: "opponent_left", reason: "disconnect" };
             break;
+          case "chat":
+            game.messages.push({
+              from: "opponent",
+              text: msg.text,
+              at: Date.now(),
+            });
+            break;
           default:
             console.warn("unknown message", msg);
         }
@@ -74,6 +82,14 @@ export class PlayerOpponent implements Opponent {
       return;
     }
     this.ws.send(JSON.stringify({ type: "move", from, to, promotion }));
+  }
+
+  sendChat(text: string): void {
+    if (this.ws?.readyState !== WebSocket.OPEN) {
+      console.warn("not connected");
+      return;
+    }
+    this.ws.send(JSON.stringify({ type: "chat", text }));
   }
 
   stop(): void {

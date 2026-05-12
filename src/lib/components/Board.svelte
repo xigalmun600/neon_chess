@@ -55,11 +55,14 @@
 
     game.turn = turnColor;
 
-    const historyLength = chess.history().length;
-    if (historyLength > lastSeenHistoryLength) {
-      lastSeenHistoryLength = historyLength;
+    const history = chess.history();
+    if (history.length > lastSeenHistoryLength) {
+      for (let i = lastSeenHistoryLength; i < history.length; i++) {
+        game.moves.push(history[i]);
+      }
+      lastSeenHistoryLength = history.length;
       game.lastMoveColor = chess.turn() === "w" ? "black" : "white";
-      game.moveCount = historyLength;
+      game.moveCount = history.length;
     }
   };
 

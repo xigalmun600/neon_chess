@@ -7,6 +7,12 @@ export type GameResult = {
   reason: string;
 };
 
+export type ChatMessage = {
+  from: "me" | "opponent";
+  text: string;
+  at: number;
+};
+
 export const game = $state({
   status: "off" as Status,
   color: null as Color | null,
@@ -15,6 +21,9 @@ export const game = $state({
   moveCount: 0,
   lastMoveColor: null as Color | null,
   result: null as GameResult | null,
+  opponentName: null as string | null,
+  moves: [] as string[],
+  messages: [] as ChatMessage[],
 });
 
 export function resetGame() {
@@ -25,4 +34,7 @@ export function resetGame() {
   game.moveCount = 0;
   game.lastMoveColor = null;
   game.result = null;
+  game.opponentName = null;
+  game.moves = [];
+  game.messages = [];
 }

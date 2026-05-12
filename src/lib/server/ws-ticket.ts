@@ -24,18 +24,24 @@ async function sign(payload: string): Promise<string> {
   return encodeHexLowerCase(new Uint8Array(sig));
 }
 
-export async function issueTicket(userId: number): Promise<string> {
+export async function issueTicket(
+  userId: number,
+  username: string,
+): Promise<string> {
+  if (username.includes(".")) throw new Error("username cannot contain '.'");
   const expiresAt = Date.now() + TICKET_TTL_MS;
-  const payload = `${userId}.${expiresAt}`;
+  const payload = `${userId}.${username}.${expiresAt}`;
   const sig = await sign(payload);
   return `${payload}.${sig}`;
 }
 
-export async function verifyTicket(ticket: string): Promise<number | null> {
+export async function verifyTicket(
+  ticket: string,
+): Promise<{ userId: number; username: string } | null> {
   const parts = ticket.split(".");
-  if (parts.length !== 3) return null;
-  const [userIdStr, expiresAtStr, sig] = parts;
-  const expected = await sign(`${userIdStr}.${expiresAtStr}`);
+  if (parts.length !== 4) return null;
+  const [userIdStr, username, expiresAtStr, sig] = parts;
+  const expected = await sign(`${userIdStr}.${username}.${expiresAtStr}`);
   if (sig.length !== expected.length) return null;
   let mismatch = 0;
   for (let i = 0; i < sig.length; i++) {
@@ -46,5 +52,5 @@ export async function verifyTicket(ticket: string): Promise<number | null> {
   if (!Number.isFinite(expiresAt) || expiresAt < Date.now()) return null;
   const userId = Number(userIdStr);
   if (!Number.isInteger(userId)) return null;
-  return userId;
+  return { userId, username };
 }
