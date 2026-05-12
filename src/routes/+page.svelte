@@ -15,7 +15,7 @@
 			Neon Chess
 		</h1>
 		<p class="mt-2 text-sm uppercase tracking-widest text-gray-400">
-			Play rhythm chess with your friends. To the beat.
+			Play chess with your friends.
 		</p>
 	</section>
 

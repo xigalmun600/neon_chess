@@ -1,8 +1,11 @@
 import type { Color } from "$lib/state/opponent";
 
-export type Status = "off" | "on" | "find" | "match";
+export type Status = "off" | "on" | "find" | "match" | "ended";
 
-export type HitGrade = "perfect" | "great" | "good" | "ok" | "miss";
+export type GameResult = {
+  winner: "white" | "black" | "draw" | "opponent_left";
+  reason: string;
+};
 
 export const game = $state({
   status: "off" as Status,
@@ -11,9 +14,7 @@ export const game = $state({
   lastMove: null as { from: string; to: string; promotion?: string } | null,
   moveCount: 0,
   lastMoveColor: null as Color | null,
-  score: 0,
-  lastHit: null as { grade: HitGrade; points: number; errorMs: number } | null,
-  lastHitAt: 0,
+  result: null as GameResult | null,
 });
 
 export function resetGame() {
@@ -23,7 +24,5 @@ export function resetGame() {
   game.lastMove = null;
   game.moveCount = 0;
   game.lastMoveColor = null;
-  game.score = 0;
-  game.lastHit = null;
-  game.lastHitAt = 0;
+  game.result = null;
 }

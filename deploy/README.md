@@ -81,8 +81,11 @@ HOST=127.0.0.1
 PORT=3000
 ORIGIN=https://chess.galisma.com
 DATABASE_URL=postgresql://neon_chess@localhost:5433/neon_chess?host=/srv/neon-chess/.postgres
+INTERNAL_API_SECRET=<random-hex>
 EOF
 ```
+
+`INTERNAL_API_SECRET` must match the value in `/etc/chess-server.env` on the same host — generate once with `openssl rand -hex 32` and paste into both files. The chess_server uses it to sign WebSocket auth tickets and to authenticate game-result POSTs to this app.
 
 The DB user is `neon_chess` (created by the flake's `initdb`), not the OS user `neonchess`.
 

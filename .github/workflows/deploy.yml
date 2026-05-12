@@ -27,6 +27,10 @@ jobs:
             git fetch --all --prune
             git reset --hard origin/main
             nix develop --command npm ci
+            set -a
+            source /etc/neon-chess.env
+            set +a
             nix develop --command npm run build
+            nix develop --command psql -f db/tables.sql
             sudo /bin/systemctl restart neon-chess </dev/null
             sudo /bin/systemctl is-active neon-chess </dev/null
