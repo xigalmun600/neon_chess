@@ -3,8 +3,13 @@
 	import "$lib/assets/grid-bg.css";
 	import favicon from "$lib/assets/favicon.svg";
 	import Navbar from "$lib/components/Navbar.svelte";
+	import { hydrateTheme } from "$lib/state/theme.svelte";
 
-	let { children } = $props();
+	let { data, children } = $props();
+
+	$effect(() => {
+		hydrateTheme(data.user);
+	});
 </script>
 
 <svelte:head>

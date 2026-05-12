@@ -8,6 +8,7 @@
 
   let draft = $state("");
   let listEl: HTMLDivElement;
+  let open = $state(false);
 
   function send(e: Event) {
     e.preventDefault();
@@ -24,19 +25,24 @@
   });
 </script>
 
-<details
-  class="group rounded-xl border border-border-muted bg-surface-dark/80 backdrop-blur-md lg:contents"
+<div
+  class="rounded-xl border border-border-muted bg-surface-dark/80 backdrop-blur-md"
 >
-  <summary
-    class="flex cursor-pointer list-none items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-widest text-gray-400 lg:hidden"
+  <button
+    type="button"
+    onclick={() => (open = !open)}
+    class="flex w-full items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-widest text-gray-400 lg:hidden"
   >
     <span>Chat</span>
-    <span class="text-gray-500 group-open:rotate-180 transition-transform"
-      >▾</span
+    <span
+      class="text-gray-500 transition-transform"
+      class:rotate-180={open}>▾</span
     >
-  </summary>
+  </button>
   <div
-    class="flex h-[40vh] flex-col p-3 lg:h-[700px] lg:rounded-xl lg:border lg:border-border-muted lg:bg-surface-dark/80 lg:backdrop-blur-md"
+    class="flex-col p-3 lg:flex lg:h-[700px] {open
+      ? 'flex h-[40vh]'
+      : 'hidden'}"
   >
     <h4
       class="mb-2 hidden px-1 text-xs font-bold uppercase tracking-widest text-gray-400 lg:block"
@@ -80,4 +86,4 @@
       </button>
     </form>
   </div>
-</details>
+</div>

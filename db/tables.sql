@@ -10,6 +10,8 @@ CREATE TABLE player (
   password_hash VARCHAR(255) NOT NULL,
   elo INT NOT NULL DEFAULT 1200,
   games_played INT NOT NULL DEFAULT 0,
+  board_theme VARCHAR(20) NOT NULL DEFAULT 'neon',
+  piece_theme VARCHAR(40) NOT NULL DEFAULT 'kiwen-suwi-neon-glowy',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE TABLE game (

@@ -17,6 +17,10 @@ export const player = pgTable("player", {
   passwordHash: varchar("password_hash", { length: 255 }).notNull(),
   elo: integer("elo").notNull().default(1200),
   gamesPlayed: integer("games_played").notNull().default(0),
+  boardTheme: varchar("board_theme", { length: 20 }).notNull().default("neon"),
+  pieceTheme: varchar("piece_theme", { length: 40 })
+    .notNull()
+    .default("kiwen-suwi-neon-glowy"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

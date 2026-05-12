@@ -14,7 +14,12 @@ const SESSION_REFRESH_THRESHOLD_MS = 15 * 24 * 60 * 60 * 1000; // refresh when <
 
 export const SESSION_COOKIE = "session";
 
-export type SessionUser = { id: number; username: string };
+export type SessionUser = {
+	id: number;
+	username: string;
+	boardTheme: string;
+	pieceTheme: string;
+};
 export type SessionRecord = { id: string; userId: number; expiresAt: Date };
 
 export function generateSessionToken(): string {
@@ -47,6 +52,8 @@ export async function validateSessionToken(
 			userId: session.userId,
 			expiresAt: session.expiresAt,
 			username: player.username,
+			boardTheme: player.boardTheme,
+			pieceTheme: player.pieceTheme,
 		})
 		.from(session)
 		.innerJoin(player, eq(session.userId, player.id))
@@ -68,7 +75,12 @@ export async function validateSessionToken(
 
 	return {
 		session: { id: row.sessionId, userId: row.userId, expiresAt },
-		user: { id: row.userId, username: row.username },
+		user: {
+			id: row.userId,
+			username: row.username,
+			boardTheme: row.boardTheme,
+			pieceTheme: row.pieceTheme,
+		},
 	};
 }
 

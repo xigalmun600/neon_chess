@@ -10,8 +10,7 @@
   import type { Key } from "chessground/types";
   import { Chessground } from "chessground";
   import "$lib/assets/boards/chessground.base.css";
-  import "$lib/assets/boards/chessground.neon.css";
-  import "$lib/assets/pieces/chessground.kiwen-suwi-neon-glowy.css";
+  import { theme } from "$lib/state/theme.svelte";
 
   let { opponent }: { opponent: Opponent } = $props();
 
@@ -84,6 +83,20 @@
       },
     });
     if (game.color) updateBoard();
+
+    let raf = 0;
+    const scheduleRedraw = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => cg?.redrawAll());
+    };
+    scheduleRedraw();
+    const ro = new ResizeObserver(scheduleRedraw);
+    ro.observe(el);
+
+    return () => {
+      ro.disconnect();
+      cancelAnimationFrame(raf);
+    };
   });
 
   $effect(() => {
@@ -100,6 +113,12 @@
       cg.move(from as Key, to as Key);
       updateBoard();
     }
+  });
+
+  $effect(() => {
+    void theme.board;
+    void theme.piece;
+    if (cg) requestAnimationFrame(() => cg.redrawAll());
   });
 </script>
 

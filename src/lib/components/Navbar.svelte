@@ -29,9 +29,13 @@
 				>
 				<span class="text-sm font-bold text-white">{user.username}</span>
 			</div>
-			<div class="relative">
+			<a
+				href="/settings"
+				title="Settings"
+				class="relative block"
+			>
 				<div
-					class="flex size-10 items-center justify-center rounded-lg border border-border-muted bg-surface-light font-bold text-primary"
+					class="flex size-10 items-center justify-center rounded-lg border border-border-muted bg-surface-light font-bold text-primary transition hover:border-primary hover:shadow-neon-sm"
 					style="text-shadow: 0 0 8px #00ffff;"
 				>
 					{initial}
@@ -40,7 +44,7 @@
 					class="absolute -bottom-1 -right-1 size-3 rounded-full border-2 border-surface-dark bg-primary"
 					style="box-shadow: 0 0 6px #00ffff;"
 				></div>
-			</div>
+			</a>
 			<form method="POST" action="/logout">
 				<button
 					type="submit"
