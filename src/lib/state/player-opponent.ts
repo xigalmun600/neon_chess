@@ -1,130 +1,112 @@
 import { game } from "$lib/state/game.svelte";
 import type { Opponent } from "$lib/state/opponent";
-import { wsUrl } from "$lib/state/ws-url";
-
-async function fetchTicket(): Promise<string> {
-  const res = await fetch("/api/ws-ticket");
-  if (!res.ok) throw new Error(`ws-ticket: ${res.status}`);
-  const { ticket } = (await res.json()) as { ticket: string };
-  return ticket;
-}
+import { connect, send, subscribe } from "$lib/state/ws-conn";
 
 export class PlayerOpponent implements Opponent {
-  private ws: WebSocket | null = null;
+  private unsubscribe: (() => void) | null = null;
+  private resolveStart: (() => void) | null = null;
 
   start(): Promise<void> {
     return new Promise(async (resolve, reject) => {
-      let ticket: string;
+      this.resolveStart = resolve;
+      this.unsubscribe = subscribe((msg) => this.handleMessage(msg));
       try {
-        ticket = await fetchTicket();
+        await connect();
       } catch (e) {
+        this.cleanup();
         reject(e);
         return;
       }
-      const ws = new WebSocket(wsUrl(), [`ticket.${ticket}`]);
-      this.ws = ws;
-
-      ws.onopen = () => {
-        game.status = "on";
-        ws.send(JSON.stringify({ type: "find_match" }));
-      };
-
-      ws.onclose = () => {
-        game.status = "off";
-      };
-
-      ws.onerror = (e) => reject(e);
-
-      ws.onmessage = (packet) => {
-        const msg = JSON.parse(packet.data);
-        switch (msg.type) {
-          case "finding":
-            game.status = "find";
-            break;
-          case "match":
-            game.status = "match";
-            game.color = msg.color;
-            game.turn = "white";
-            game.opponentName = msg.opponent ?? null;
-            resolve();
-            break;
-          case "move":
-            game.lastMove = { from: msg.from, to: msg.to, promotion: msg.promotion };
-            break;
-          case "turn":
-            game.turn = msg.color;
-            break;
-          case "game_over":
-            game.status = "ended";
-            game.result = { winner: msg.result, reason: msg.reason };
-            game.drawOfferFrom = null;
-            break;
-          case "opponent_left":
-            game.status = "ended";
-            game.result = { winner: "opponent_left", reason: "disconnect" };
-            game.drawOfferFrom = null;
-            break;
-          case "draw_offered":
-            game.drawOfferFrom = "opponent";
-            break;
-          case "draw_declined":
-          case "draw_withdrawn":
-            game.drawOfferFrom = null;
-            break;
-          case "chat":
-            game.messages.push({
-              from: "opponent",
-              text: msg.text,
-              at: Date.now(),
-            });
-            break;
-          default:
-            console.warn("unknown message", msg);
-        }
-      };
+      game.status = "on";
+      send({ type: "find_match" });
     });
   }
 
-  sendMove(from: string, to: string, promotion?: string): void {
-    if (this.ws?.readyState !== WebSocket.OPEN) {
-      console.warn("not connected");
-      return;
+  private handleMessage(msg: any): void {
+    switch (msg.type) {
+      case "finding":
+        game.status = "find";
+        break;
+      case "match":
+        game.status = "match";
+        game.color = msg.color;
+        game.turn = "white";
+        game.opponentName = msg.opponent ?? null;
+        this.resolveStart?.();
+        this.resolveStart = null;
+        break;
+      case "move":
+        game.lastMove = {
+          from: msg.from,
+          to: msg.to,
+          promotion: msg.promotion,
+        };
+        break;
+      case "turn":
+        game.turn = msg.color;
+        break;
+      case "game_over":
+        game.status = "ended";
+        game.result = { winner: msg.result, reason: msg.reason };
+        game.drawOfferFrom = null;
+        break;
+      case "opponent_left":
+        game.status = "ended";
+        game.result = { winner: "opponent_left", reason: "disconnect" };
+        game.drawOfferFrom = null;
+        break;
+      case "draw_offered":
+        game.drawOfferFrom = "opponent";
+        break;
+      case "draw_declined":
+      case "draw_withdrawn":
+        game.drawOfferFrom = null;
+        break;
+      case "chat":
+        game.messages.push({
+          from: "opponent",
+          text: msg.text,
+          at: Date.now(),
+        });
+        break;
+      // friend/presence/invite messages are handled by friends store, not here
     }
-    this.ws.send(JSON.stringify({ type: "move", from, to, promotion }));
+  }
+
+  sendMove(from: string, to: string, promotion?: string): void {
+    send({ type: "move", from, to, promotion });
   }
 
   sendChat(text: string): void {
-    if (this.ws?.readyState !== WebSocket.OPEN) {
-      console.warn("not connected");
-      return;
-    }
-    this.ws.send(JSON.stringify({ type: "chat", text }));
+    send({ type: "chat", text });
   }
 
   resign(): void {
-    if (this.ws?.readyState !== WebSocket.OPEN) return;
-    this.ws.send(JSON.stringify({ type: "resign" }));
+    send({ type: "resign" });
   }
 
   offerDraw(): void {
-    if (this.ws?.readyState !== WebSocket.OPEN) return;
-    this.ws.send(JSON.stringify({ type: "draw_offer" }));
+    send({ type: "draw_offer" });
     game.drawOfferFrom = "me";
   }
 
   acceptDraw(): void {
-    if (this.ws?.readyState !== WebSocket.OPEN) return;
-    this.ws.send(JSON.stringify({ type: "draw_accept" }));
+    send({ type: "draw_accept" });
   }
 
   declineDraw(): void {
-    if (this.ws?.readyState !== WebSocket.OPEN) return;
-    this.ws.send(JSON.stringify({ type: "draw_decline" }));
+    send({ type: "draw_decline" });
     game.drawOfferFrom = null;
   }
 
+  private cleanup(): void {
+    this.unsubscribe?.();
+    this.unsubscribe = null;
+    this.resolveStart = null;
+  }
+
   stop(): void {
-    this.ws?.close();
-    this.ws = null;
+    this.cleanup();
+    // we don't close the shared WS; layout owns it
   }
 }

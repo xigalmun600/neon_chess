@@ -15,7 +15,7 @@
   let { opponent }: { opponent: Opponent } = $props();
 
   let el: HTMLDivElement;
-  let cg: Api;
+  let cg = $state<Api | null>(null);
 
   const chess = new Chess();
   let lastSeenHistoryLength = 0;
@@ -39,6 +39,7 @@
   };
 
   const updateBoard = () => {
+    if (!cg) return;
     const turnColor = chess.turn() === "w" ? "white" : "black";
     const myTurn =
       (game.color === "white" && chess.turn() === "w") ||
@@ -66,7 +67,7 @@
   };
 
   onMount(() => {
-    cg = Chessground(el, {
+    const api = Chessground(el, {
       orientation: game.color ?? "white",
       movable: {
         free: false,
@@ -82,12 +83,13 @@
         },
       },
     });
+    cg = api;
     if (game.color) updateBoard();
 
     let raf = 0;
     const scheduleRedraw = () => {
       cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => cg?.redrawAll());
+      raf = requestAnimationFrame(() => api.redrawAll());
     };
     scheduleRedraw();
     const ro = new ResizeObserver(scheduleRedraw);
@@ -118,7 +120,8 @@
   $effect(() => {
     void theme.board;
     void theme.piece;
-    if (cg) requestAnimationFrame(() => cg.redrawAll());
+    const api = cg;
+    if (api) requestAnimationFrame(() => api.redrawAll());
   });
 </script>
 

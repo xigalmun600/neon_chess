@@ -1,5 +1,4 @@
 DROP TABLE IF EXISTS session CASCADE;
-DROP TABLE IF EXISTS friend_request CASCADE;
 DROP TABLE IF EXISTS game CASCADE;
 DROP TABLE IF EXISTS player CASCADE;
 
@@ -28,15 +27,6 @@ CREATE TABLE game (
 );
 CREATE INDEX game_white_idx ON game(white_id, created_at DESC);
 CREATE INDEX game_black_idx ON game(black_id, created_at DESC);
-CREATE TABLE friend_request (
-  requester_id INT NOT NULL REFERENCES player(id) ON DELETE CASCADE,
-  addressee_id INT NOT NULL REFERENCES player(id) ON DELETE CASCADE,
-  status VARCHAR(10) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'declined')),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  responded_at TIMESTAMPTZ,
-  PRIMARY KEY (requester_id, addressee_id),
-  CHECK (requester_id <> addressee_id)
-);
 CREATE TABLE session (
   id TEXT PRIMARY KEY,
   user_id INT NOT NULL REFERENCES player(id) ON DELETE CASCADE,

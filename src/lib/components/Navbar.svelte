@@ -30,6 +30,13 @@
 				<span class="text-sm font-bold text-white">{user.username}</span>
 			</div>
 			<a
+				href="/challenge"
+				title="Challenge"
+				class="relative flex size-10 items-center justify-center rounded-lg border border-border-muted bg-surface-light text-gray-400 transition hover:border-primary hover:text-primary"
+			>
+				<span class="material-symbols-outlined !text-xl">swords</span>
+			</a>
+			<a
 				href="/settings"
 				title="Settings"
 				class="relative block"
