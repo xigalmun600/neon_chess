@@ -18,7 +18,7 @@
       opponent = new PlayerOpponent();
       await opponent.start();
     } else if (mode === "machine") {
-      opponent = new MachineOpponent({ skillLevel: 1, moveTimeMs: 50 });
+      opponent = new MachineOpponent({ skillLevel: 1, moveTimeMs: 800 });
       await opponent.start();
     }
   });

@@ -9,7 +9,7 @@ export class MachineOpponent implements Opponent {
 
     constructor(opts: { skillLevel?: number; moveTimeMs?: number } = {}) {
         this.skillLevel = opts.skillLevel ?? 1;
-        this.moveTimeMs = opts.moveTimeMs ?? 100;
+        this.moveTimeMs = opts.moveTimeMs ?? 800;
     }
 
     start(): Promise<void> {
