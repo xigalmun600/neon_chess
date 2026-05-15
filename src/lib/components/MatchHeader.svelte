@@ -16,19 +16,20 @@
         : "text-gray-400";
 </script>
 
-{#if game.opponentName && myColor}
-  <div
-    class="mx-auto mb-4 flex w-fit items-center gap-3 rounded-lg border border-border-muted bg-surface-dark/80 px-4 py-2 backdrop-blur-md"
-  >
-    <span class="font-bold {colorClass(myColor)}">{myName}</span>
-    <span class="text-xs uppercase tracking-widest text-gray-500"
-      >({myColor})</span
+<div class="mx-auto mb-4 flex h-11 items-center justify-center">
+  {#if game.opponentName && myColor}
+    <div
+      class="flex w-fit items-center gap-3 rounded-lg border border-border-muted bg-surface-dark/80 px-4 py-2 backdrop-blur-md"
     >
-    <span class="text-gray-500">vs</span>
-    <span class="text-xs uppercase tracking-widest text-gray-500"
-      >({opponentColor})</span
-    >
-    <span class="font-bold {colorClass(opponentColor)}">{game.opponentName}</span
-    >
-  </div>
-{/if}
+      <span class="font-bold {colorClass(myColor)}">{myName}</span>
+      <span class="text-xs uppercase tracking-widest text-gray-500"
+        >({myColor})</span
+      >
+      <span class="text-gray-500">vs</span>
+      <span class="text-xs uppercase tracking-widest text-gray-500"
+        >({opponentColor})</span
+      >
+      <span class="font-bold {colorClass(opponentColor)}">{game.opponentName}</span>
+    </div>
+  {/if}
+</div>
