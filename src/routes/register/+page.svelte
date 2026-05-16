@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { enhance } from "$app/forms";
+	import { applyAction, enhance } from "$app/forms";
+	import { goto } from "$app/navigation";
 	import type { ActionData } from "./$types";
 
 	let { form }: { form: ActionData } = $props();
@@ -31,8 +32,12 @@
 			method="POST"
 			use:enhance={() => {
 				submitting = true;
-				return async ({ update }) => {
-					await update();
+				return async ({ result }) => {
+					if (result.type === "redirect") {
+						await goto(result.location, { invalidateAll: true });
+					} else {
+						await applyAction(result);
+					}
 					submitting = false;
 				};
 			}}

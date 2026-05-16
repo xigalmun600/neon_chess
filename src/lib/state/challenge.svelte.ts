@@ -1,3 +1,4 @@
+import { goto } from "$app/navigation";
 import { send, subscribe } from "$lib/state/ws-conn";
 
 const INVITE_ACK_TIMEOUT_MS = 4000;
@@ -85,6 +86,7 @@ export function startInvitesBridge(): void {
       case "match": {
         invitesState.incoming = [];
         invitesState.outgoing = [];
+        void goto("/game?mode=human");
         break;
       }
     }

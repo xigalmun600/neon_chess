@@ -1394,6 +1394,11 @@
 				stopped = true;
 				if (timeoutId != null) clearTimeout(timeoutId);
 				if (idleId != null) clearInterval(idleId);
+				try {
+					gl.clearColor(0, 0, 0, 0);
+					gl.clear(gl.COLOR_BUFFER_BIT);
+				} catch {}
+				canvasEl.remove();
 				const ctxLoss = gl.getExtension("WEBGL_lose_context");
 				if (ctxLoss && typeof ctxLoss.loseContext === "function")
 					ctxLoss.loseContext();
@@ -1406,4 +1411,5 @@
 <canvas
 	bind:this={canvas}
 	class="pointer-events-none fixed inset-0 -z-10 h-full w-full"
+	style="background: transparent;"
 ></canvas>

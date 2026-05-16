@@ -28,3 +28,11 @@ export async function logout(page: Page) {
 	await page.waitForURL("**/", { timeout: 10_000 });
 	await expect(page.getByRole("link", { name: /log in/i })).toBeVisible();
 }
+
+export async function loginUser(page: Page, user: TestUser): Promise<void> {
+	await page.goto("/login");
+	await page.locator('input[name="identifier"]').fill(user.username);
+	await page.locator('input[name="password"]').fill(user.password);
+	await page.getByRole("button", { name: /log in/i }).click();
+	await page.waitForURL("**/", { timeout: 10_000 });
+}
