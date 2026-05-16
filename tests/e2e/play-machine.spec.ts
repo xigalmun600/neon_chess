@@ -9,7 +9,9 @@ test("starting a game vs machine mounts the board without console errors", async
 	await page.goto("/game?mode=machine");
 
 	await expect(page.locator(".cg-wrap")).toBeVisible({ timeout: 15_000 });
-	await expect(page.getByText(/playing|on/i)).toBeVisible({ timeout: 15_000 });
+	await expect(page.getByText(/^Status:\s+(playing|on|match)/i)).toBeVisible({
+		timeout: 15_000,
+	});
 
 	await page.waitForTimeout(2_000);
 

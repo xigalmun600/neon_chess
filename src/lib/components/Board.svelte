@@ -19,6 +19,7 @@
 
   const chess = new Chess();
   let lastSeenHistoryLength = 0;
+  let lastAppliedMoveRef: unknown = null;
 
   const isPromotion = (from: string, to: string) => {
     const piece = chess.get(from as never);
@@ -44,9 +45,12 @@
     const myTurn =
       (game.color === "white" && chess.turn() === "w") ||
       (game.color === "black" && chess.turn() === "b");
+    const verboseHistory = chess.history({ verbose: true });
+    const lastSan = verboseHistory[verboseHistory.length - 1];
     cg.set({
       fen: chess.fen(),
       turnColor,
+      lastMove: lastSan ? [lastSan.from as Key, lastSan.to as Key] : undefined,
       movable: {
         color: myTurn ? game.color! : undefined,
         dests: myTurn ? getLegalMoves() : new Map(),
@@ -109,12 +113,18 @@
   });
 
   $effect(() => {
-    if (cg && game.lastMove) {
-      const { from, to, promotion } = game.lastMove;
-      chess.move({ from, to, promotion });
-      cg.move(from as Key, to as Key);
-      updateBoard();
-    }
+    if (!cg || !game.lastMove) return;
+    const m = game.lastMove;
+    // Guard against re-entry: the effect can re-run with the same
+    // `game.lastMove` reference (e.g. when `cg` flips from null to Api after
+    // mount, or when an unrelated tracked dep changes). Without this guard,
+    // chess.move throws "Invalid move" on the second application. Every WS
+    // move arrives as a new object reference, so identity comparison is safe.
+    if (m === lastAppliedMoveRef) return;
+    lastAppliedMoveRef = m;
+    chess.move({ from: m.from, to: m.to, promotion: m.promotion });
+    cg.move(m.from as Key, m.to as Key);
+    updateBoard();
   });
 
   $effect(() => {

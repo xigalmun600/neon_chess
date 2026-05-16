@@ -50,6 +50,7 @@ export const load: PageServerLoad = async ({ locals }) => {
       .then((r) => r[0]),
     db
       .select({
+        id: game.id,
         whiteId: game.whiteId,
         blackId: game.blackId,
         result: game.result,
@@ -84,7 +85,7 @@ export const load: PageServerLoad = async ({ locals }) => {
         : (row.result === "white") === wasWhite
           ? "win"
           : "loss";
-    return { opponent, timeControl: "—", result };
+    return { id: row.id, opponent, timeControl: "—", result };
   });
 
   return {

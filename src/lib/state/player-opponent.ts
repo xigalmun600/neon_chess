@@ -17,6 +17,13 @@ export class PlayerOpponent implements Opponent {
         reject(e);
         return;
       }
+      // If we arrived from an accepted invite, the global challenge bridge
+      // already seeded `game.status = "match"` + color. Don't queue again.
+      if (game.status === "match" && game.color) {
+        this.resolveStart?.();
+        this.resolveStart = null;
+        return;
+      }
       game.status = "on";
       send({ type: "find_match" });
     });

@@ -1,4 +1,5 @@
 import { goto } from "$app/navigation";
+import { game } from "$lib/state/game.svelte";
 import { send, subscribe } from "$lib/state/ws-conn";
 
 const INVITE_ACK_TIMEOUT_MS = 4000;
@@ -86,6 +87,13 @@ export function startInvitesBridge(): void {
       case "match": {
         invitesState.incoming = [];
         invitesState.outgoing = [];
+        // Seed game state so when /game mounts the PlayerOpponent doesn't
+        // need to wait for a `match` message that already fired before the
+        // page existed (invite flow).
+        game.status = "match";
+        game.color = msg.color;
+        game.turn = "white";
+        game.opponentName = msg.opponent ?? null;
         void goto("/game?mode=human");
         break;
       }

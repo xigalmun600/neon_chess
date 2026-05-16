@@ -21,7 +21,7 @@
 			No games yet — deploy matchmaking to log your first operation.
 		</div>
 	{:else}
-		{#each games as game (game.opponent + game.timeControl)}
+		{#each games as game, i (game.id ?? `idx-${i}-${game.opponent}`)}
 			<div
 				class="group flex cursor-pointer items-center justify-between rounded-lg border border-border-muted bg-surface-dark p-4 transition-all hover:border-primary/30 hover:bg-surface-light"
 			>

@@ -23,7 +23,7 @@ test("home stays visible (not black) after finishing a machine game", async ({
 	// the home must render real content — if the canvas were covering the
 	// page in black, these elements would be hidden behind it
 	await expect(
-		page.getByRole("heading", { name: /Neon Chess/i }),
+		page.getByRole("heading", { name: "Neon Chess", exact: true }),
 	).toBeVisible();
 	await expect(page.getByRole("link", { name: /Play vs Human/i })).toBeVisible();
 	await expect(page.getByRole("link", { name: /Play vs Machine/i })).toBeVisible();

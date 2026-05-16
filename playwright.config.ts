@@ -18,6 +18,14 @@ export default defineConfig({
 		timeout: 60_000,
 	},
 	projects: [
-		{ name: "chromium", use: { ...devices["Desktop Chrome"] } },
+		{
+			name: "chromium",
+			use: {
+				...devices["Desktop Chrome"],
+				// big viewport so the chess board fits without scrolling —
+				// chessground drag math is in viewport-relative coords.
+				viewport: { width: 1600, height: 1200 },
+			},
+		},
 	],
 });

@@ -6,6 +6,15 @@
 	let api: { splatForColor: (color: "white" | "black") => void } | null = null;
 
 	onMount(() => {
+		// Skip the WebGL fluid simulation when a test or low-power flag is set;
+		// it pegs the GPU and causes hangs in headless Chromium.
+		if (
+			typeof window !== "undefined" &&
+			(window as unknown as { __NEON_CHESS_NO_FLUID__?: boolean })
+				.__NEON_CHESS_NO_FLUID__
+		) {
+			return;
+		}
 		const fluid = startFluid(canvas);
 		api = { splatForColor: fluid.splatForColor };
 		return fluid.cleanup;
