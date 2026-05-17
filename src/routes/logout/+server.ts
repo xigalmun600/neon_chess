@@ -1,5 +1,6 @@
 import { error, redirect } from "@sveltejs/kit";
 import { SESSION_COOKIE, invalidateSession } from "$lib/server/auth";
+import { m } from "$lib/paraglide/messages";
 import type { RequestHandler } from "./$types";
 
 export const POST: RequestHandler = async ({ locals, cookies }) => {
@@ -9,5 +10,5 @@ export const POST: RequestHandler = async ({ locals, cookies }) => {
 };
 
 export const GET: RequestHandler = () => {
-	throw error(405, "Use POST to log out.");
+	throw error(405, m.logout_usePost());
 };

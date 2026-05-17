@@ -19,15 +19,31 @@ export async function disableFluidBackground(page: Page): Promise<void> {
 	});
 }
 
+export async function setLocale(
+	page: Page,
+	locale: "es" | "en",
+): Promise<void> {
+	// Lock specs to a known language so text-matching regexes are stable.
+	// Set via the cookie Paraglide reads, before any navigation.
+	await page.context().addCookies([
+		{
+			name: "lang",
+			value: locale,
+			url: page.url() === "about:blank" ? "http://localhost:5173" : page.url(),
+		},
+	]);
+}
+
 export async function registerUser(page: Page): Promise<TestUser> {
 	await disableFluidBackground(page);
+	await setLocale(page, "es");
 	const user = makeUser();
 	await page.goto("/register");
 	await page.waitForLoadState("networkidle");
 	await page.locator('input[name="username"]').fill(user.username);
 	await page.locator('input[name="email"]').fill(user.email);
 	await page.locator('input[name="password"]').fill(user.password);
-	await page.getByRole("button", { name: /register/i }).click();
+	await page.getByRole("button", { name: /^Registrarse$/i }).click();
 	await page.waitForURL((url) => url.pathname === "/", { timeout: 10_000 });
 	await expect(page.locator("header").getByText(user.username)).toBeVisible();
 	return user;
@@ -36,7 +52,7 @@ export async function registerUser(page: Page): Promise<TestUser> {
 export async function logout(page: Page) {
 	await page.locator('header form[action="/logout"] button[type="submit"]').click();
 	await page.waitForURL((url) => url.pathname === "/", { timeout: 10_000 });
-	await expect(page.getByRole("link", { name: /log in/i })).toBeVisible();
+	await expect(page.getByRole("link", { name: /Iniciar sesión/i })).toBeVisible();
 }
 
 export async function loginUser(page: Page, user: TestUser): Promise<void> {
@@ -46,7 +62,7 @@ export async function loginUser(page: Page, user: TestUser): Promise<void> {
 	await page.waitForLoadState("networkidle");
 	await page.locator('input[name="identifier"]').fill(user.username);
 	await page.locator('input[name="password"]').fill(user.password);
-	await page.getByRole("button", { name: /log in/i }).click();
+	await page.getByRole("button", { name: /^Entrar$/i }).click();
 	await page.waitForURL((url) => url.pathname === "/", { timeout: 10_000 });
 }
 
@@ -80,10 +96,10 @@ export async function startMatchBetween(
 		inviter.getByRole("button", { name: /^Retar$/i }).first(),
 	).toBeVisible({ timeout: 10_000 });
 	await inviter.getByRole("button", { name: /^Retar$/i }).first().click();
-	await expect(invited.getByText(/wants to play/i)).toBeVisible({
+	await expect(invited.getByText(/quiere jugar/i)).toBeVisible({
 		timeout: 10_000,
 	});
-	await invited.getByTitle(/Accept/i).click();
+	await invited.getByTitle(/Aceptar/i).click();
 	await Promise.all([
 		inviter.waitForURL(/\/game\?mode=human/, { timeout: 10_000 }),
 		invited.waitForURL(/\/game\?mode=human/, { timeout: 10_000 }),
@@ -96,8 +112,8 @@ export async function startMatchBetween(
 
 export async function resignAndGoHome(page: Page): Promise<void> {
 	page.once("dialog", (d) => void d.accept());
-	await page.getByRole("button", { name: /^Resign$/i }).click();
-	const homeBtn = page.getByRole("button", { name: /^Home$/i });
+	await page.getByRole("button", { name: /^Rendirse$/i }).click();
+	const homeBtn = page.getByRole("button", { name: /^Inicio$/i });
 	await expect(homeBtn).toBeVisible({ timeout: 10_000 });
 	await homeBtn.click();
 	await page.waitForURL("**/", { timeout: 10_000 });
@@ -105,7 +121,7 @@ export async function resignAndGoHome(page: Page): Promise<void> {
 
 export async function leaveGameToHome(page: Page): Promise<void> {
 	// the loser/opponent sees the modal too once the WS message arrives
-	const homeBtn = page.getByRole("button", { name: /^Home$/i });
+	const homeBtn = page.getByRole("button", { name: /^Inicio$/i });
 	await expect(homeBtn).toBeVisible({ timeout: 10_000 });
 	await homeBtn.click();
 	await page.waitForURL("**/", { timeout: 10_000 });

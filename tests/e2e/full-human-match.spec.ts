@@ -52,13 +52,13 @@ test("two humans can play multiple matches and the home keeps rendering", async 
 			pageA.getByRole("heading", { name: "Neon Chess", exact: true }),
 		).toBeVisible();
 		await expect(
-			pageA.getByRole("link", { name: /Play vs Human/i }),
+			pageA.getByRole("link", { name: /Jugar contra humano/i }),
 		).toBeVisible();
 		await expect(
 			pageB.getByRole("heading", { name: "Neon Chess", exact: true }),
 		).toBeVisible();
 		await expect(
-			pageB.getByRole("link", { name: /Play vs Human/i }),
+			pageB.getByRole("link", { name: /Jugar contra humano/i }),
 		).toBeVisible();
 
 		// Belt-and-suspenders: no lingering fluid-bg canvas.

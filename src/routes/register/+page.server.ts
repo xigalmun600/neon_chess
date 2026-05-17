@@ -8,6 +8,7 @@ import {
 	generateSessionToken,
 	hashPassword,
 } from "$lib/server/auth";
+import { m } from "$lib/paraglide/messages";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = ({ locals }) => {
@@ -19,7 +20,7 @@ const USERNAME_RE = /^[a-zA-Z0-9_]{3,50}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const actions: Actions = {
-	default: async ({ request, cookies }) => {
+	default: async ({ request, cookies, locals }) => {
 		const form = await request.formData();
 		const username = String(form.get("username") ?? "").trim();
 		const email = String(form.get("email") ?? "").trim().toLowerCase();
@@ -29,17 +30,17 @@ export const actions: Actions = {
 			return fail(400, {
 				email,
 				username,
-				error: "Username must be 3–50 chars: letters, digits, underscore.",
+				error: m.register_errorUsername(),
 			});
 		}
 		if (!EMAIL_RE.test(email) || email.length > 100) {
-			return fail(400, { email, username, error: "Invalid email." });
+			return fail(400, { email, username, error: m.register_errorEmail() });
 		}
 		if (password.length < 8 || password.length > 255) {
 			return fail(400, {
 				email,
 				username,
-				error: "Password must be 8–255 characters.",
+				error: m.register_errorPassword(),
 			});
 		}
 
@@ -49,16 +50,16 @@ export const actions: Actions = {
 		try {
 			const [row] = await db
 				.insert(player)
-				.values({ username, email, passwordHash })
+				.values({ username, email, passwordHash, language: locals.locale })
 				.returning({ id: player.id });
 			userId = row.id;
 		} catch (e) {
 			const msg = e instanceof Error ? e.message : String(e);
 			const taken = /duplicate key|unique/i.test(msg)
 				? /username/i.test(msg)
-					? "Username already taken."
-					: "Email already registered."
-				: "Could not create account.";
+					? m.register_errorUsernameTaken()
+					: m.register_errorEmailTaken()
+				: m.register_errorGeneric();
 			return fail(409, { email, username, error: taken });
 		}
 

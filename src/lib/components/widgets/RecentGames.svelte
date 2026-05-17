@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Game } from "$lib/components/widgets/types";
+	import { m } from "$lib/paraglide/messages";
 
 	let { games }: { games: Game[] } = $props();
 
@@ -12,13 +13,13 @@
 
 <div class="flex flex-col gap-3">
 	<h4 class="px-2 text-sm font-bold uppercase tracking-widest text-gray-400">
-		Recent Operations
+		{m.home_recent()}
 	</h4>
 	{#if games.length === 0}
 		<div
 			class="rounded-lg border border-dashed border-border-muted bg-surface-dark/50 p-6 text-center text-sm text-gray-500"
 		>
-			No games yet — deploy matchmaking to log your first operation.
+			{m.home_noGames()}
 		</div>
 	{:else}
 		{#each games as game, i (game.id ?? `idx-${i}-${game.opponent}`)}
@@ -39,7 +40,7 @@
 				<div class="flex items-center gap-6">
 					{#if game.accuracy !== undefined}
 						<div class="hidden flex-col items-end md:flex">
-							<span class="text-xs font-bold uppercase text-gray-400">Accuracy</span>
+							<span class="text-xs font-bold uppercase text-gray-400">{m.home_accuracy()}</span>
 							<span class="font-mono font-bold text-primary">{game.accuracy}%</span>
 						</div>
 					{/if}

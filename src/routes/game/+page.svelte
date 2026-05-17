@@ -13,6 +13,7 @@
   import { PlayerOpponent } from "$lib/state/player-opponent";
   import { MachineOpponent } from "$lib/state/machine-opponent";
   import { game, resetGame } from "$lib/state/game.svelte";
+  import { m } from "$lib/paraglide/messages";
 
   const rawMode = page.url.searchParams.get("mode");
   const mode: "human" | "machine" | null =
@@ -28,9 +29,9 @@
       opponent = p;
       await p.start();
     } else if (mode === "machine") {
-      const m = new MachineOpponent({ skillLevel: 1, moveTimeMs: 800 });
-      opponent = m;
-      await m.start();
+      const machine = new MachineOpponent({ skillLevel: 1, moveTimeMs: 800 });
+      opponent = machine;
+      await machine.start();
     }
   }
 
@@ -61,7 +62,7 @@
 <main class="mx-auto w-full max-w-[1600px] px-4 py-6">
   {#if mode === null}
     <p class="mt-10 text-center text-red-400">
-      Invalid mode: expected ?mode=human or ?mode=machine
+      {m.game_invalidMode()}
     </p>
   {:else if opponent}
     <MatchHeader />
@@ -89,6 +90,6 @@
       </div>
     </div>
   {:else}
-    <p class="mt-10 text-center">Loading…</p>
+    <p class="mt-10 text-center">{m.game_loading()}</p>
   {/if}
 </main>

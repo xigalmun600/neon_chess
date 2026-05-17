@@ -20,6 +20,10 @@ export const player = pgTable("player", {
   pieceTheme: varchar("piece_theme", { length: 40 })
     .notNull()
     .default("kiwen-suwi-neon-glowy"),
+  language: varchar("language", { length: 2 })
+    .notNull()
+    .default("es")
+    .$type<"es" | "en">(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

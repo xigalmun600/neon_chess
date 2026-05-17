@@ -2,6 +2,7 @@
   import { game } from "$lib/state/game.svelte";
   import type { Opponent } from "$lib/state/opponent";
   import GameControls from "$lib/components/GameControls.svelte";
+  import { m } from "$lib/paraglide/messages";
 
   let {
     opponent,
@@ -37,7 +38,7 @@
     onclick={() => (open = !open)}
     class="flex w-full items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-widest text-gray-400 lg:hidden"
   >
-    <span>Move list</span>
+    <span>{m.moves_title()}</span>
     <span
       class="text-gray-500 transition-transform"
       class:rotate-180={open}>▾</span
@@ -51,12 +52,12 @@
     <h4
       class="hidden px-1 text-xs font-bold uppercase tracking-widest text-gray-400 lg:block"
     >
-      Move list
+      {m.moves_title()}
     </h4>
     <GameControls {opponent} {mode} />
     <div bind:this={listEl} class="flex-1 overflow-y-auto pr-1">
       {#if pairs.length === 0}
-        <p class="mt-4 text-center text-xs text-gray-500">No moves yet.</p>
+        <p class="mt-4 text-center text-xs text-gray-500">{m.moves_empty()}</p>
       {:else}
         <ol class="font-mono text-sm">
           {#each pairs as p (p.num)}

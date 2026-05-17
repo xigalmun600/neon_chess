@@ -1,6 +1,7 @@
 <script lang="ts">
   import { game } from "$lib/state/game.svelte";
   import type { PlayerOpponent } from "$lib/state/player-opponent";
+  import { m } from "$lib/paraglide/messages";
 
   const MAX_LENGTH = 200;
 
@@ -33,7 +34,7 @@
     onclick={() => (open = !open)}
     class="flex w-full items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-widest text-gray-400 lg:hidden"
   >
-    <span>Chat</span>
+    <span>{m.chat_title()}</span>
     <span
       class="text-gray-500 transition-transform"
       class:rotate-180={open}>▾</span
@@ -47,14 +48,14 @@
     <h4
       class="mb-2 hidden px-1 text-xs font-bold uppercase tracking-widest text-gray-400 lg:block"
     >
-      Chat
+      {m.chat_title()}
     </h4>
     <div
       bind:this={listEl}
       class="flex flex-1 flex-col gap-2 overflow-y-auto pr-1"
     >
       {#if game.messages.length === 0}
-        <p class="mt-4 text-center text-xs text-gray-500">No messages yet.</p>
+        <p class="mt-4 text-center text-xs text-gray-500">{m.chat_empty()}</p>
       {/if}
       {#each game.messages as msg (msg.at)}
         <div class="flex {msg.from === 'me' ? 'justify-end' : 'justify-start'}">
@@ -74,7 +75,7 @@
         type="text"
         bind:value={draft}
         maxlength={MAX_LENGTH}
-        placeholder="Say something…"
+        placeholder={m.chat_placeholder()}
         class="flex-1 rounded-lg border border-border-muted bg-surface-light px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-primary/60"
       />
       <button
@@ -82,7 +83,7 @@
         disabled={!draft.trim()}
         class="rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-primary transition hover:bg-primary/20 disabled:cursor-not-allowed disabled:opacity-40"
       >
-        Send
+        {m.chat_send()}
       </button>
     </form>
   </div>

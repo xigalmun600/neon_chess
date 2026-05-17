@@ -19,6 +19,7 @@ export type SessionUser = {
 	username: string;
 	boardTheme: string;
 	pieceTheme: string;
+	language: "es" | "en";
 };
 export type SessionRecord = { id: string; userId: number; expiresAt: Date };
 
@@ -54,6 +55,7 @@ export async function validateSessionToken(
 			username: player.username,
 			boardTheme: player.boardTheme,
 			pieceTheme: player.pieceTheme,
+			language: player.language,
 		})
 		.from(session)
 		.innerJoin(player, eq(session.userId, player.id))
@@ -80,6 +82,7 @@ export async function validateSessionToken(
 			username: row.username,
 			boardTheme: row.boardTheme,
 			pieceTheme: row.pieceTheme,
+			language: row.language,
 		},
 	};
 }

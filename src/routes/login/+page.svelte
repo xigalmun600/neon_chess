@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { applyAction, enhance } from "$app/forms";
 	import { goto } from "$app/navigation";
+	import { m } from "$lib/paraglide/messages";
 	import type { ActionData } from "./$types";
 
 	let { form }: { form: ActionData } = $props();
@@ -8,7 +9,7 @@
 </script>
 
 <svelte:head>
-	<title>Login — Neon Chess</title>
+	<title>{m.login_pageTitle()}</title>
 </svelte:head>
 
 <main class="flex min-h-[calc(100vh-3.5rem)] items-center justify-center px-6 py-12">
@@ -21,10 +22,10 @@
 				style="text-shadow: 0 0 12px #00ffff;">login</span
 			>
 			<h1 class="mt-2 text-2xl font-bold tracking-[0.05em] text-white">
-				LOG IN
+				{m.login_heading()}
 			</h1>
 			<p class="mt-1 text-xs uppercase tracking-widest text-gray-500">
-				Resume your session
+				{m.login_subheading()}
 			</p>
 		</div>
 
@@ -45,7 +46,7 @@
 		>
 			<label class="flex flex-col gap-1">
 				<span class="text-xs uppercase tracking-widest text-gray-400"
-					>Username or email</span
+					>{m.login_identifier()}</span
 				>
 				<input
 					type="text"
@@ -59,7 +60,7 @@
 
 			<label class="flex flex-col gap-1">
 				<span class="text-xs uppercase tracking-widest text-gray-400"
-					>Password</span
+					>{m.login_password()}</span
 				>
 				<input
 					type="password"
@@ -82,16 +83,16 @@
 				class="mt-2 rounded-lg border border-primary bg-primary/10 px-4 py-2 text-sm font-bold uppercase tracking-widest text-primary transition hover:bg-primary/20 hover:shadow-neon disabled:opacity-50"
 				style="text-shadow: 0 0 8px #00ffff;"
 			>
-				{submitting ? "Logging in…" : "Log in"}
+				{submitting ? m.login_submitting() : m.login_submit()}
 			</button>
 		</form>
 
 		<p class="mt-6 text-center text-sm text-gray-400">
-			No account?
+			{m.login_noAccount()}
 			<a
 				href="/register"
 				class="font-bold text-primary hover:underline"
-				style="text-shadow: 0 0 6px #00ffff;">Register</a
+				style="text-shadow: 0 0 6px #00ffff;">{m.nav_register()}</a
 			>
 		</p>
 	</div>

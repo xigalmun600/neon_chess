@@ -1,6 +1,7 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import { theme, setTheme } from "$lib/state/theme.svelte";
+  import { m } from "$lib/paraglide/messages";
 
   let { data, form } = $props();
 
@@ -25,10 +26,10 @@
     class="mb-2 text-3xl font-bold uppercase tracking-widest text-primary"
     style="text-shadow: 0 0 12px rgba(0, 255, 255, 0.5);"
   >
-    Settings
+    {m.settings_heading()}
   </h1>
   <p class="mb-8 text-sm uppercase tracking-widest text-gray-400">
-    Customize how the board looks.
+    {m.settings_subheading()}
   </p>
 
   <form
@@ -44,7 +45,7 @@
         for="boardTheme"
         class="text-xs font-bold uppercase tracking-widest text-gray-400"
       >
-        Board theme
+        {m.settings_boardTheme()}
       </label>
       <select
         id="boardTheme"
@@ -64,7 +65,7 @@
         for="pieceTheme"
         class="text-xs font-bold uppercase tracking-widest text-gray-400"
       >
-        Piece set
+        {m.settings_pieceSet()}
       </label>
       <select
         id="pieceTheme"
@@ -81,20 +82,20 @@
 
     <div class="flex items-center justify-between gap-4">
       <p class="text-xs text-gray-500">
-        Current: <span class="text-primary">{theme.board}</span> /
+        {m.settings_current()} <span class="text-primary">{theme.board}</span> /
         <span class="text-secondary">{theme.piece}</span>
       </p>
       <button
         type="submit"
         class="rounded-lg border border-primary/40 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-primary transition hover:bg-primary/20"
       >
-        Save
+        {m.settings_save()}
       </button>
     </div>
 
     {#if form?.success}
       <p class="text-xs uppercase tracking-widest text-primary">
-        Saved.
+        {m.settings_saved()}
       </p>
     {:else if form?.error}
       <p class="text-xs uppercase tracking-widest text-red-400">

@@ -2,6 +2,7 @@
 	import StatCard from "$lib/components/widgets/StatCard.svelte";
 	import PlayCard from "$lib/components/widgets/PlayCard.svelte";
 	import RecentGames from "$lib/components/widgets/RecentGames.svelte";
+	import { m } from "$lib/paraglide/messages";
 
 	let { data } = $props();
 </script>
@@ -15,25 +16,25 @@
 			Neon Chess
 		</h1>
 		<p class="mt-2 text-sm uppercase tracking-widest text-gray-400">
-			Play chess with your friends.
+			{m.home_tagline()}
 		</p>
 	</section>
 
 	<section class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
 		<StatCard
-			label="Current Elo"
+			label={m.home_currentElo()}
 			value={data.stats.elo}
 			icon="bolt"
 			accent="primary"
 		/>
 		<StatCard
-			label="Global Rank"
+			label={m.home_globalRank()}
 			value={data.stats.rank ?? "—"}
 			icon="public"
 			accent="white"
 		/>
 		<StatCard
-			label="Win Rate"
+			label={m.home_winRate()}
 			value={data.stats.winRate ?? "—"}
 			suffix={data.stats.winRate !== null ? "%" : ""}
 			icon="flare"
@@ -46,15 +47,15 @@
 			<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 				<PlayCard
 					href="/game?mode=human"
-					title="Play vs Human"
-					subtitle="Online matchmaking"
+					title={m.home_playHuman()}
+					subtitle={m.home_playHumanSub()}
 					icon="swords"
 					accent="primary"
 				/>
 				<PlayCard
 					href="/game?mode=machine"
-					title="Play vs Machine"
-					subtitle="Stockfish engine"
+					title={m.home_playMachine()}
+					subtitle={m.home_playMachineSub()}
 					icon="memory"
 					accent="secondary"
 				/>

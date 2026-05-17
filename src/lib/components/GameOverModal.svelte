@@ -1,5 +1,6 @@
 <script lang="ts">
   import { game } from "$lib/state/game.svelte";
+  import { m } from "$lib/paraglide/messages";
 
   let {
     onPlayAgain,
@@ -9,31 +10,31 @@
   const headline = $derived.by(() => {
     if (!game.result) return "";
     const w = game.result.winner;
-    if (w === "draw") return "Draw";
-    if (w === "opponent_left") return "Opponent left";
-    if (w === game.color) return "You won!";
-    return "You lost";
+    if (w === "draw") return m.gameOver_draw();
+    if (w === "opponent_left") return m.gameOver_opponentLeft();
+    if (w === game.color) return m.gameOver_youWon();
+    return m.gameOver_youLost();
   });
 
   const subtitle = $derived.by(() => {
     if (!game.result) return "";
     switch (game.result.reason) {
       case "checkmate":
-        return "by checkmate";
+        return m.gameOver_byCheckmate();
       case "stalemate":
-        return "by stalemate";
+        return m.gameOver_byStalemate();
       case "threefold":
-        return "by threefold repetition";
+        return m.gameOver_byThreefold();
       case "insufficient":
-        return "by insufficient material";
+        return m.gameOver_byInsufficient();
       case "fifty_move":
-        return "by the fifty-move rule";
+        return m.gameOver_byFiftyMove();
       case "resign":
-        return "by resignation";
+        return m.gameOver_byResign();
       case "agreement":
-        return "by agreement";
+        return m.gameOver_byAgreement();
       case "disconnect":
-        return "opponent disconnected";
+        return m.gameOver_byDisconnect();
       default:
         return game.result.reason;
     }
@@ -62,14 +63,14 @@
         onclick={onPlayAgain}
         class="rounded-lg border border-primary/40 bg-primary/10 px-4 py-2 text-sm font-bold uppercase tracking-widest text-primary transition hover:bg-primary/20"
       >
-        Play Again
+        {m.gameOver_playAgain()}
       </button>
       <button
         type="button"
         onclick={onHome}
         class="rounded-lg border border-border-muted bg-surface-light px-4 py-2 text-center text-sm font-bold uppercase tracking-widest text-gray-300 transition hover:bg-surface-dark"
       >
-        Home
+        {m.gameOver_home()}
       </button>
     </div>
   </div>

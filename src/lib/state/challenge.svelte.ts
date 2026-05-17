@@ -1,6 +1,7 @@
 import { goto } from "$app/navigation";
 import { game } from "$lib/state/game.svelte";
 import { send, subscribe } from "$lib/state/ws-conn";
+import { m } from "$lib/paraglide/messages";
 
 const INVITE_ACK_TIMEOUT_MS = 4000;
 const pendingInviteTimeouts = new Map<number, ReturnType<typeof setTimeout>>();
@@ -123,22 +124,28 @@ export function sendInvite(toUserId: number, toUsername: string): void {
     invitesState.outgoing = invitesState.outgoing.filter(
       (i) => i.inviteId !== optimisticId,
     );
-    challengeError.message =
-      "No se pudo enviar el reto. ¿Está el otro jugador conectado?";
+    challengeError.message = m.invite_errorTimeout();
   }, INVITE_ACK_TIMEOUT_MS);
   pendingInviteTimeouts.set(toUserId, t);
 }
 
 function describeInviteError(reason: unknown): string {
-  if (typeof reason !== "string") return "No se pudo enviar el reto.";
+  if (typeof reason !== "string") return m.invite_errorGeneric();
   switch (reason) {
     case "user_offline":
-      return "Ese jugador no está conectado ahora mismo.";
+      return m.invite_errorUserOffline();
+    case "target_in_game":
     case "already_in_game":
-      return "Ese jugador ya está en otra partida.";
+      return m.invite_errorTargetInGame();
+    case "in_game":
+      return m.invite_errorInGame();
     case "self_invite":
-      return "No puedes retarte a ti mismo.";
+      return m.invite_errorSelfInvite();
+    case "already_pending":
+      return m.invite_errorAlreadyPending();
+    case "sender_gone":
+      return m.invite_errorSenderGone();
     default:
-      return `No se pudo enviar el reto (${reason}).`;
+      return m.invite_errorGeneric();
   }
 }

@@ -9,6 +9,7 @@ import {
 	generateSessionToken,
 	verifyPassword,
 } from "$lib/server/auth";
+import { m } from "$lib/paraglide/messages";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = ({ locals }) => {
@@ -23,7 +24,7 @@ export const actions: Actions = {
 		const password = String(form.get("password") ?? "");
 
 		if (!identifier || !password) {
-			return fail(400, { identifier, error: "Enter your credentials." });
+			return fail(400, { identifier, error: m.login_errorEnterCreds() });
 		}
 
 		const isEmail = identifier.includes("@");
@@ -46,7 +47,7 @@ export const actions: Actions = {
 		const ok = await verifyPassword(row?.passwordHash ?? fakeHash, password);
 
 		if (!row || !ok) {
-			return fail(400, { identifier, error: "Invalid credentials." });
+			return fail(400, { identifier, error: m.login_errorInvalid() });
 		}
 
 		const token = generateSessionToken();

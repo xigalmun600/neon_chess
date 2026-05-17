@@ -10,9 +10,14 @@
 		startInvitesBridge,
 		stopInvitesBridge,
 	} from "$lib/state/challenge.svelte";
+	import { installReactiveLocale } from "$lib/state/locale.svelte";
 	import { onDestroy } from "svelte";
 
 	let { data, children } = $props();
+
+	$effect(() => {
+		installReactiveLocale(data.locale);
+	});
 
 	$effect(() => {
 		hydrateTheme(data.user);

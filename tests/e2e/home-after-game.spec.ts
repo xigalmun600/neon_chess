@@ -11,10 +11,10 @@ test("home stays visible (not black) after finishing a machine game", async ({
 
 	// resign uses a native confirm() dialog; accept it automatically
 	page.once("dialog", (d) => void d.accept());
-	await page.getByRole("button", { name: /^Resign$/i }).click();
+	await page.getByRole("button", { name: /^Rendirse$/i }).click();
 
 	// the game-over modal should appear and offer "Home"
-	const homeButton = page.getByRole("button", { name: /^Home$/i });
+	const homeButton = page.getByRole("button", { name: /^Inicio$/i });
 	await expect(homeButton).toBeVisible({ timeout: 10_000 });
 	await homeButton.click();
 
@@ -25,8 +25,8 @@ test("home stays visible (not black) after finishing a machine game", async ({
 	await expect(
 		page.getByRole("heading", { name: "Neon Chess", exact: true }),
 	).toBeVisible();
-	await expect(page.getByRole("link", { name: /Play vs Human/i })).toBeVisible();
-	await expect(page.getByRole("link", { name: /Play vs Machine/i })).toBeVisible();
+	await expect(page.getByRole("link", { name: /Jugar contra humano/i })).toBeVisible();
+	await expect(page.getByRole("link", { name: /Jugar contra la máquina/i })).toBeVisible();
 
 	// belt and suspenders: any FluidBackground canvas should be gone from
 	// the DOM (the cleanup removes it on game-layout unmount)

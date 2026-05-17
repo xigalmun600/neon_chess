@@ -4,6 +4,7 @@ import { INTERNAL_API_SECRET } from "$env/static/private";
 import { db } from "$lib/server/db";
 import { game, player } from "$lib/server/db/schema";
 import { computeElo } from "$lib/server/elo";
+import { m } from "$lib/paraglide/messages";
 import type { RequestHandler } from "./$types";
 
 const VALID_REASONS = new Set([
@@ -20,7 +21,7 @@ const VALID_REASONS = new Set([
 
 export const POST: RequestHandler = async ({ request }) => {
   if (request.headers.get("x-internal-secret") !== INTERNAL_API_SECRET) {
-    throw error(401, "unauthorized");
+    throw error(401, m.api_unauthorized());
   }
 
   const raw = (await request.json()) as Record<string, unknown>;
@@ -34,7 +35,7 @@ export const POST: RequestHandler = async ({ request }) => {
     typeof endReason !== "string" ||
     !VALID_REASONS.has(endReason)
   ) {
-    throw error(400, "bad request");
+    throw error(400, m.api_badRequest());
   }
 
   await db.transaction(async (tx) => {
@@ -46,7 +47,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     const whiteRow = rows.find((r) => r.id === whiteId);
     const blackRow = rows.find((r) => r.id === blackId);
-    if (!whiteRow || !blackRow) throw error(404, "player not found");
+    if (!whiteRow || !blackRow) throw error(404, m.api_playerNotFound());
 
     const { whiteAfter, blackAfter } = computeElo(
       whiteRow.elo,

@@ -5,6 +5,7 @@
     sendInvite,
   } from "$lib/state/challenge.svelte";
   import { send } from "$lib/state/ws-conn";
+  import { m } from "$lib/paraglide/messages";
 
   type SearchResult = { id: number; username: string; elo: number };
 
@@ -45,7 +46,7 @@
         searchError = null;
       } catch (e) {
         if ((e as Error).name !== "AbortError") {
-          searchError = "Búsqueda fallida";
+          searchError = m.challenge_searchFailed();
         }
       } finally {
         if (inflight === ctrl) inflight = null;
@@ -78,10 +79,10 @@
     class="mb-2 text-3xl font-bold uppercase tracking-widest text-primary"
     style="text-shadow: 0 0 12px rgba(0, 255, 255, 0.5);"
   >
-    Retar a un jugador
+    {m.challenge_heading()}
   </h1>
   <p class="mb-8 text-sm uppercase tracking-widest text-gray-400">
-    Busca a un usuario por su nombre y envíale un reto.
+    {m.challenge_subheading()}
   </p>
 
   <section
@@ -90,7 +91,7 @@
     <input
       type="text"
       bind:value={query}
-      placeholder="Nombre de usuario…"
+      placeholder={m.challenge_placeholder()}
       maxlength="50"
       autocomplete="off"
       class="w-full rounded-lg border border-border-muted bg-surface-light px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-primary/60"
@@ -112,9 +113,9 @@
     {#if query.trim()}
       <div class="mt-3">
         {#if searching && results.length === 0}
-          <p class="text-xs text-gray-500">Buscando…</p>
+          <p class="text-xs text-gray-500">{m.challenge_searching()}</p>
         {:else if results.length === 0}
-          <p class="text-xs text-gray-500">No se encontró ningún usuario.</p>
+          <p class="text-xs text-gray-500">{m.challenge_noResults()}</p>
         {:else}
           <ul class="flex flex-col gap-2">
             {#each results as r (r.id)}
@@ -134,7 +135,7 @@
                     onclick={() => cancel(pending)}
                     class="rounded-md border border-border-muted bg-surface-light px-2 py-1 text-xs font-bold uppercase tracking-widest text-gray-300 transition hover:border-secondary hover:text-secondary"
                   >
-                    Cancelar
+                    {m.challenge_btnCancel()}
                   </button>
                 {:else}
                   <button
@@ -142,7 +143,7 @@
                     onclick={() => challenge(r)}
                     class="rounded-md border border-primary/40 bg-primary/10 px-2 py-1 text-xs font-bold uppercase tracking-widest text-primary transition hover:bg-primary/20"
                   >
-                    Retar
+                    {m.challenge_btnChallenge()}
                   </button>
                 {/if}
               </li>

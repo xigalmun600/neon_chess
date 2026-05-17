@@ -1,6 +1,7 @@
 <script lang="ts">
   import { game } from "$lib/state/game.svelte";
   import type { Opponent } from "$lib/state/opponent";
+  import { m } from "$lib/paraglide/messages";
 
   let {
     opponent,
@@ -8,7 +9,7 @@
   }: { opponent: Opponent; mode: "human" | "machine" } = $props();
 
   function onResign() {
-    if (!confirm("Resign the game?")) return;
+    if (!confirm(m.controls_resignConfirm())) return;
     opponent.resign();
   }
 
@@ -29,21 +30,21 @@
   <div class="flex w-full flex-wrap items-center justify-center gap-2">
     {#if game.drawOfferFrom === "opponent"}
       <span class="text-xs uppercase tracking-widest text-gray-400"
-        >Draw offered</span
+        >{m.controls_drawOffered()}</span
       >
       <button
         type="button"
         onclick={onAcceptDraw}
         class="rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-primary transition hover:bg-primary/20"
       >
-        Accept
+        {m.controls_accept()}
       </button>
       <button
         type="button"
         onclick={onDeclineDraw}
         class="rounded-lg border border-border-muted bg-surface-light px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-gray-300 transition hover:bg-surface-dark"
       >
-        Decline
+        {m.controls_decline()}
       </button>
     {:else}
       {#if mode === "human"}
@@ -53,10 +54,10 @@
           disabled={game.drawOfferFrom !== null}
           class="rounded-lg border border-secondary/40 bg-secondary/10 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-secondary transition hover:bg-secondary/20 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Offer Draw
+          {m.controls_offerDraw()}
         </button>
         {#if game.drawOfferFrom === "me"}
-          <span class="text-xs italic text-gray-400">Offer sent…</span>
+          <span class="text-xs italic text-gray-400">{m.controls_offerSent()}</span>
         {/if}
       {/if}
       <button
@@ -64,7 +65,7 @@
         onclick={onResign}
         class="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-red-400 transition hover:bg-red-500/20"
       >
-        Resign
+        {m.controls_resign()}
       </button>
     {/if}
   </div>

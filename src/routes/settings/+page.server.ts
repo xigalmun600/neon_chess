@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "$lib/server/db";
 import { player } from "$lib/server/db/schema";
 import { BOARDS, PIECES } from "$lib/state/theme-catalog";
+import { m } from "$lib/paraglide/messages";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = ({ locals }) => {
@@ -22,10 +23,10 @@ export const actions: Actions = {
 		const pieceTheme = String(form.get("pieceTheme") ?? "");
 
 		if (!BOARDS[boardTheme]) {
-			return fail(400, { error: "Invalid board theme." });
+			return fail(400, { error: m.settings_errorBoard() });
 		}
 		if (!PIECES[pieceTheme]) {
-			return fail(400, { error: "Invalid piece set." });
+			return fail(400, { error: m.settings_errorPiece() });
 		}
 
 		await db

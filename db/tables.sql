@@ -11,6 +11,7 @@ CREATE TABLE player (
   games_played INT NOT NULL DEFAULT 0,
   board_theme VARCHAR(20) NOT NULL DEFAULT 'neon',
   piece_theme VARCHAR(40) NOT NULL DEFAULT 'kiwen-suwi-neon-glowy',
+  language VARCHAR(2) NOT NULL DEFAULT 'es' CHECK (language IN ('es','en')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE TABLE game (

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state";
+	import { m } from "$lib/paraglide/messages";
 </script>
 
 <svelte:head>
@@ -16,12 +17,12 @@
 		{page.status}
 	</h1>
 	<p class="text-sm uppercase tracking-widest text-gray-400">
-		{page.error?.message ?? "Algo ha ido mal"}
+		{page.error?.message ?? m.error_default()}
 	</p>
 	<a
 		href="/"
 		class="mt-4 rounded-lg border border-primary/40 bg-primary/10 px-4 py-2 text-sm font-bold uppercase tracking-widest text-primary transition hover:bg-primary/20"
 	>
-		Volver al inicio
+		{m.error_backHome()}
 	</a>
 </main>

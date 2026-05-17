@@ -13,7 +13,7 @@ test("login lands on a fully-rendered home without manual reload", async ({
 	await expect(
 		page.getByRole("heading", { name: "Neon Chess", exact: true }),
 	).toBeVisible();
-	await expect(page.getByRole("link", { name: /Play vs Human/i })).toBeVisible();
+	await expect(page.getByRole("link", { name: /Jugar contra humano/i })).toBeVisible();
 });
 
 test("register lands on a fully-rendered home without manual reload", async ({
@@ -25,5 +25,5 @@ test("register lands on a fully-rendered home without manual reload", async ({
 	await expect(
 		page.getByRole("heading", { name: "Neon Chess", exact: true }),
 	).toBeVisible();
-	await expect(page.getByRole("link", { name: /Play vs Human/i })).toBeVisible();
+	await expect(page.getByRole("link", { name: /Jugar contra humano/i })).toBeVisible();
 });
