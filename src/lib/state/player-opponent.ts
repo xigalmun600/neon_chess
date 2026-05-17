@@ -1,6 +1,6 @@
 import { game } from "$lib/state/game.svelte";
 import type { Opponent } from "$lib/state/opponent";
-import { connect, send, subscribe } from "$lib/state/ws-conn";
+import { connect, send, subscribe, type WsMessage } from "$lib/state/ws-conn";
 
 export class PlayerOpponent implements Opponent {
   private unsubscribe: (() => void) | null = null;
@@ -29,7 +29,7 @@ export class PlayerOpponent implements Opponent {
     });
   }
 
-  private handleMessage(msg: any): void {
+  private handleMessage(msg: WsMessage): void {
     switch (msg.type) {
       case "finding":
         game.status = "find";

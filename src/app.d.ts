@@ -13,6 +13,12 @@ declare global {
 			user: SessionUser | null;
 		}
 	}
+	interface Window {
+		// Test-time disable flag for FluidBackground's WebGL canvas. Set via
+		// page.addInitScript in Playwright fixtures — headless Chromium's GPU
+		// process stalls on long ReadPixels calls and deadlocks CDP.
+		__NEON_CHESS_NO_FLUID__?: boolean;
+	}
 }
 
 export {};

@@ -15,8 +15,7 @@ export async function disableFluidBackground(page: Page): Promise<void> {
 	// FluidBackground's WebGL hammers the headless GPU process and stalls
 	// CDP. Set this flag before any navigation so the component bails on mount.
 	await page.addInitScript(() => {
-		(window as unknown as { __NEON_CHESS_NO_FLUID__?: boolean }).__NEON_CHESS_NO_FLUID__ =
-			true;
+		window.__NEON_CHESS_NO_FLUID__ = true;
 	});
 }
 

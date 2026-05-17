@@ -3,15 +3,8 @@ import { eq, inArray, sql } from "drizzle-orm";
 import { INTERNAL_API_SECRET } from "$env/static/private";
 import { db } from "$lib/server/db";
 import { game, player } from "$lib/server/db/schema";
-import { computeElo, type GameResult } from "$lib/server/elo";
+import { computeElo } from "$lib/server/elo";
 import type { RequestHandler } from "./$types";
-
-type Body = {
-  whiteId: number;
-  blackId: number;
-  result: GameResult;
-  endReason: string;
-};
 
 const VALID_REASONS = new Set([
   "checkmate",
@@ -30,8 +23,8 @@ export const POST: RequestHandler = async ({ request }) => {
     throw error(401, "unauthorized");
   }
 
-  const body = (await request.json()) as Partial<Body>;
-  const { whiteId, blackId, result, endReason } = body;
+  const raw = (await request.json()) as Record<string, unknown>;
+  const { whiteId, blackId, result, endReason } = raw;
 
   if (
     typeof whiteId !== "number" ||

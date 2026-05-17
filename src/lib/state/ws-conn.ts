@@ -1,6 +1,28 @@
 import { wsUrl } from "$lib/state/ws-url";
 
-type Listener = (msg: any) => void;
+export type WsMessage =
+  | { type: "finding" }
+  | { type: "match"; color: "white" | "black"; opponent?: string | null }
+  | { type: "move"; from: string; to: string; promotion?: string }
+  | { type: "turn"; color: "white" | "black" }
+  | {
+      type: "game_over";
+      result: "white" | "black" | "draw" | "opponent_left";
+      reason: string;
+    }
+  | { type: "opponent_left" }
+  | { type: "draw_offered" }
+  | { type: "draw_declined" }
+  | { type: "draw_withdrawn" }
+  | { type: "chat"; text: string; from?: string }
+  | { type: "invite_received"; inviteId: string; fromId: number; fromUsername: string }
+  | { type: "invite_sent"; inviteId: string; toId: number; toUsername?: string }
+  | { type: "invite_declined"; inviteId: string }
+  | { type: "invite_cancelled"; inviteId: string }
+  | { type: "invite_expired"; inviteId: string }
+  | { type: "invite_error"; reason: string };
+
+type Listener = (msg: WsMessage) => void;
 
 let ws: WebSocket | null = null;
 let connecting: Promise<void> | null = null;
@@ -41,12 +63,13 @@ export function connect(): Promise<void> {
         connecting = null;
       };
       sock.onmessage = (e) => {
-        let msg: any;
+        let msg: WsMessage;
         try {
-          msg = JSON.parse(e.data);
+          msg = JSON.parse(e.data) as WsMessage;
         } catch {
           return;
         }
+        if (!msg || typeof msg.type !== "string") return;
         for (const l of listeners) {
           try {
             l(msg);
